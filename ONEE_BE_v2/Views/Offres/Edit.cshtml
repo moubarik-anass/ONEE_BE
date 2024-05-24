@@ -1,0 +1,55 @@
+﻿@model ONEE_BE_v2.Models.Offre
+
+@{
+    ViewData["Title"] = "Modifier les offres";
+}
+
+<h1>Edit</h1>
+
+<h4>Offre</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="Titre" class="control-label"></label>
+                <input asp-for="Titre" class="form-control" />
+                <span asp-validation-for="Titre" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="dateDebut" class="control-label"></label>
+                <input asp-for="dateDebut" class="form-control" type="date" id="d" />
+                <span asp-validation-for="dateDebut" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="dateFin" class="control-label"></label>
+                <input asp-for="dateFin" class="form-control" type="date" id="f" />
+                <span asp-validation-for="dateFin" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="nbr_places" class="control-label"></label>
+                <input asp-for="nbr_places" class="form-control" />
+                <span asp-validation-for="nbr_places" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <br /><div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<br /><div>
+    <a asp-action="Index" class="btn btn-primary"><i class="fa fa-arrow-left"></i> Back to List</a>
+</div>
+<script src="~/js/site.js"></script>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

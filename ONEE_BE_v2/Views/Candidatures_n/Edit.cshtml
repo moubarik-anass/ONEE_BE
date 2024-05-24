@@ -1,0 +1,146 @@
+﻿@model ONEE_BE_v2.Models.Candidature
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Candidature</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.Nom)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.Nom)
+                </dd>
+                <span asp-validation-for="Nom" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.Prenom)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.Prenom)
+                </dd>
+                <span asp-validation-for="Prenom" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.Email)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.Email)
+                </dd>
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.datepostulation)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.datepostulation)
+                </dd>
+                <span asp-validation-for="datepostulation" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.ville)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.ville)
+                </dd>
+                <span asp-validation-for="ville" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.Adresse)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.Adresse)
+                </dd>
+                <span asp-validation-for="Adresse" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.Emploiprecedent)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.Emploiprecedent)
+                </dd>
+                <span asp-validation-for="Emploiprecedent" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.nompere)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.nompere)
+                </dd>
+                <span asp-validation-for="nompere" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.nommere)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.nommere)
+                </dd>
+                <span asp-validation-for="nommere" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.datenaissance)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.datenaissance)
+                </dd>
+                <span asp-validation-for="datenaissance" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.statusfamiliale)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.statusfamiliale)
+                </dd>
+                <span asp-validation-for="statusfamiliale" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Status" class="control-label"></label>
+                <select asp-for="Status" class="form-control">
+                    <option value="">-- Sélectionner le statut --</option>
+                    <option value="validé">Validé</option>
+                    <option value="non validé">Non Validé</option>
+                    <option value="en cours de traitement">En cours de traitement</option>
+                </select>
+                <span asp-validation-for="Status" class="text-danger"></span>
+            </div>
+            <div id="descriptionField" style="display: none;">
+                <div class="form-group">
+                    <label asp-for="description" class="control-label"></label>
+                    <input asp-for="description" id="description" class="form-control" />
+                    <span asp-validation-for="description" class="text-danger"></span>
+                </div>
+            </div>
+            <br />
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<br /><div>
+    <a asp-action="Index" class="btn btn-primary"><i class="fa fa-arrow-left"></i>Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
