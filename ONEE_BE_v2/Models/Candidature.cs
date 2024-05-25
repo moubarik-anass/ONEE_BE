@@ -20,6 +20,6 @@ namespace ONEE_BE_v2.Models
         public DateTime datenaissance { get; set; }
         public string? statusfamiliale { get; set; }
         public string? description { get; set; }
-        public string Status { get; set; }
+        public required string Status { get; set; }
     }
 }
