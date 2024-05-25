@@ -1,0 +1,67 @@
+﻿@model ONEE_BE_v2.Models.Offre
+@{
+    ViewData["Title"] = "Liste des offres";
+
+}
+
+<h3>@ViewData["Title"]</h3></hr>
+<div>
+    <button class="btn btn-primary mb-2" id="btnAdd">Ajouter un offre</button>
+</div>
+<div class="container">
+    <table class="table table-success table-striped table-responsive table-hover">
+        <thead>
+            <th>Id</th>
+            <th>Titre</th>
+            <th>dateDebut</th>
+            <th>dateFin</th>
+            <th>nbr_places</th>
+            <th>Description</th>
+            <th>Actions</th>
+
+        </thead>
+        <tbody id="tblBody">
+           
+        </tbody>
+        <div class="modal" id="OffreModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title" id="modalTitle"></h3>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" asp-for="Id" value="0" />
+                        <div class="mb-2">
+                            <label asp-for="Titre"></label>
+                            <input type="text" asp-for="Titre" class="form-control" placeholder="Titre" />
+                        </div>
+                        <div class="mb-2">
+                            <label asp-for="dateDebut"></label>
+                            <input type="date" asp-for="dateDebut" class="form-control" placeholder="dateDebut" />
+                        </div>
+                        <div class="mb-2">
+                            <label asp-for="dateFin"></label>
+                            <input type="date" asp-for="dateFin" class="form-control" placeholder="dateFin" />
+                        </div>
+                        <div class="mb-2">
+                            <label asp-for="nbr_places"></label>
+                            <input type="number" asp-for="nbr_places" class="form-control" placeholder="nbr_places" />
+                        </div>
+                        <div class="mb-2">
+                            <label asp-for="Description"></label>
+                            <input type="text" asp-for="Description" class="form-control" placeholder="Description" />
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" id="Save" type="submit" onclick="Insert();">Enregistrer</button>
+                        <button class="btn btn-success" id="Update" type="submit" onclick="Update();" style="display:none">Modifier</button>
+                        <button class="btn btn-danger" data-bs-dismiss="modal" onclick="HideModal();">Supprimer</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </table>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/js/Offre.js"></script>

@@ -19,139 +19,65 @@ namespace ONEE_BE_v2.Controllers
             _context = context;
         }
 
-        // GET: Offres
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.Offres.ToListAsync());
-        }
-
-        // GET: Offres/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var offre = await _context.Offres
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (offre == null)
-            {
-                return NotFound();
-            }
-
-            return View(offre);
-        }
-
-        // GET: Offres/Create
-        public IActionResult Create()
+        [HttpGet]
+        public IActionResult Index1()
         {
             return View();
         }
-
-        // POST: Offres/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpGet]
+        public JsonResult GetOffres()
+        {
+            var offres = _context.Offres.ToList();
+            return Json(offres);
+        }
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Titre,dateDebut,dateFin,Description,nbr_places")] Offre offre)
+        public JsonResult Insert(Offre model)
+        {
+            if(ModelState.IsValid)
+            {
+                _context.Offres.Add(model);
+                _context.SaveChanges();
+                return Json("les details d offres sont enregistrées");
+            }
+            else
+            {
+                return Json("Problème de validation");
+            }
+        }
+        [HttpGet]
+        public JsonResult Edit(int id)
+        {
+            var offres = _context.Offres.Find(id);
+            return Json(offres);
+        }
+        [HttpPost]
+        public JsonResult Update(Offre model)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(offre);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                _context.Offres.Update(model);
+                _context.SaveChanges();
+                return Json("les details d offres sont modifées");
             }
-            return View(offre);
-        }
-
-        // GET: Offres/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
+            else
             {
-                return NotFound();
+                return Json("Problème de validation");
             }
-
-            var offre = await _context.Offres.FindAsync(id);
-            if (offre == null)
-            {
-                return NotFound();
-            }
-            return View(offre);
         }
-
-        // POST: Offres/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Titre,dateDebut,dateFin,Description,nbr_places")] Offre offre)
+        public JsonResult Delete(int id)
         {
-            if (id != offre.Id)
+            var offres = _context.Offres.Find(id);
+            if (offres != null)
             {
-                return NotFound();
+                _context.Offres.Remove(offres);
+                _context.SaveChanges();
+                return Json("les details d offres sont supprimées");
             }
-
-            if (ModelState.IsValid)
+            else
             {
-                try
-                {
-                    _context.Update(offre);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!OffreExists(offre.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                return Json("Problème de validation");
             }
-            return View(offre);
-        }
-
-        // GET: Offres/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var offre = await _context.Offres
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (offre == null)
-            {
-                return NotFound();
-            }
-
-            return View(offre);
-        }
-
-        // POST: Offres/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var offre = await _context.Offres.FindAsync(id);
-            if (offre != null)
-            {
-                _context.Offres.Remove(offre);
-            }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool OffreExists(int id)
-        {
-            return _context.Offres.Any(e => e.Id == id);
         }
     }
 }
