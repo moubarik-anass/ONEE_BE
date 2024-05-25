@@ -1,4 +1,4 @@
-$(document).ready(function () {
+$(function () {
     GetOffres();
 });
 
@@ -9,11 +9,8 @@ function GetOffres() {
         dataType: 'json',
         contentType: 'application/json;charset=utf-8',
         success: function (response) {
-            if (response == null || response == undefined || response.length == 0) {
-                var object = '';
-                object += '<tr>';
-                object += '<td colspan="7">Aucune offre disponible</td>';
-                object += '</tr>';
+            if (!response || response.length === 0) {
+                var object = '<tr><td colspan="7">' +'Aucune offre disponible' + '</td></tr>';
                 $('#tblBody').html(object);
             } else {
                 var object = '';
@@ -21,18 +18,26 @@ function GetOffres() {
                     object += '<tr>';
                     object += '<td>' + item.id + '</td>';
                     object += '<td>' + item.titre + '</td>';
-                    object += '<td>' + item.dateDebut + '</td>';
-                    object += '<td>' + item.dateFin + '</td>';
-                    object += '<td>' + item.nbr_places + '</td>';
+                    object += '<td>' + item.DateDebut + '</td>';
+                    object += '<td>' + item.DateFin + '</td>';
+                    object += '<td>' + item.Nbr_places + '</td>';
                     object += '<td>' + item.description + '</td>';
-                    object += '<td><a href="#" class="btn btn-primary btn-sm" onclick="Edit(' + item.id + ')">Modifier</a> <a href="#" class="btn btn-danger btn-sm" onclick="Delete(' + item.id + ')">Supprimer</a></td>';
+                    object += '<td><a href="#" class="btn btn-primary btn-sm" onclick="EditData(' + item.Id + ')">Modifier</a> <a href="#" class="btn btn-danger btn-sm" onclick="DeleteData(' + item.Id + ')">Supprimer</a></td>';
                     object += '</tr>';
                 });
                 $('#tblBody').html(object);
             }
         },
-        error: function () {
-            alert('Impossible d\'afficher les offres');
+        error: function (xhr, status, error) {
+            // Affichage de l'erreur spécifique
+            alert('Impossible d\'afficher les offres : ' + error);
+
+            // Utilisation d'un bloc try-catch pour gérer les erreurs côté client
+            try {
+                // Vous pouvez ajouter ici des actions spécifiques à effectuer en cas d'erreur côté client
+            } catch (ex) {
+                console.error('Erreur côté client : ' + ex.message);
+            }
         }
     });
 }
@@ -47,25 +52,26 @@ $('#btnAdd').click(function () {
 
 function Insert() {
     var result = Validate();
-    if (result == false) {
+    if (!result) {
         return false;
     }
 
     var formData = {
-        id: $('#Id').val(),
-        titre: $('#Titre').val(),
+        Id: $('#Id').val(),
+        Titre: $('#Titre').val(),
         dateDebut: $('#dateDebut').val(),
         dateFin: $('#dateFin').val(),
         nbr_places: $('#nbr_places').val(),
-        description: $('#Description').val()
+        Description: $('#Description').val()
     };
 
     $.ajax({
         url: '/offre/Insert',
         type: 'POST',
-        data: formData,
+        data: JSON.stringify(formData),
+        contentType: 'application/json',
         success: function (response) {
-            if (response == null || response == undefined || response.length == 0) {
+            if (!response) {
                 alert('Impossible d\'enregistrer les données');
             } else {
                 HideModal();
@@ -85,68 +91,24 @@ function HideModal() {
 }
 
 function ClearData() {
-    $('#Id').val('');
-    $('#Titre').val('');
-    $('#dateDebut').val('');
-    $('#dateFin').val('');
-    $('#nbr_places').val('');
-    $('#Description').val('');
-
-    $('#Titre').css('border-color', 'lightgrey');
-    $('#dateDebut').css('border-color', 'lightgrey');
-    $('#dateFin').css('border-color', 'lightgrey');
-    $('#nbr_places').css('border-color', 'lightgrey');
-    $('#Description').css('border-color', 'lightgrey');
+    $('#Id, #Titre, #dateDebut, #dateFin, #nbr_places, #Description').val('');
+    $('#Titre, #dateDebut, #dateFin, #nbr_places, #Description').css('border-color', 'lightgrey');
 }
 
 function Validate() {
     var isValid = true;
-    if ($('#Titre').val().trim() === "") {
-        $('#Titre').css('border-color', 'Red');
-        isValid = false;
-    } else {
-        $('#Titre').css('border-color', 'lightgrey');
-    }
-    if ($('#dateDebut').val().trim() === "") {
-        $('#dateDebut').css('border-color', 'Red');
-        isValid = false;
-    } else {
-        $('#dateDebut').css('border-color', 'lightgrey');
-    }
-    if ($('#dateFin').val().trim() === "") {
-        $('#dateFin').css('border-color', 'Red');
-        isValid = false;
-    } else {
-        $('#dateFin').css('border-color', 'lightgrey');
-    }
-    if ($('#nbr_places').val().trim() === "") {
-        $('#nbr_places').css('border-color', 'Red');
-        isValid = false;
-    } else {
-        $('#nbr_places').css('border-color', 'lightgrey');
-    }
-    if ($('#Description').val().trim() === "") {
-        $('#Description').css('border-color', 'Red');
-        isValid = false;
-    } else {
-        $('#Description').css('border-color', 'lightgrey');
-    }
+    $('#Titre, #dateDebut, #dateFin, #nbr_places, #Description').each(function () {
+        if (!$(this).val().trim()) {
+            $(this).css('border-color', 'Red');
+            isValid = false;
+        } else {
+            $(this).css('border-color', 'lightgrey');
+        }
+    });
     return isValid;
 }
 
-$('#Titre').change(function () {
-    Validate();
-});
-$('#dateDebut').change(function () {
-    Validate();
-});
-$('#dateFin').change(function () {
-    Validate();
-});
-$('#nbr_places').change(function () {
-    Validate();
-});
-$('#Description').change(function () {
+$('#Titre, #dateDebut, #dateFin, #nbr_places, #Description').change(function () {
     Validate();
 });
 
@@ -157,7 +119,7 @@ function Edit(id) {
         dataType: 'json',
         contentType: 'application/json;charset=utf-8',
         success: function (response) {
-            if (response == null || response == undefined) {
+            if (!response) {
                 alert('Impossible de modifier cette offre');
             } else if (response.length === 0) {
                 alert('Les données ne sont pas accessibles avec l\'ID ' + id);
@@ -166,12 +128,12 @@ function Edit(id) {
                 $('#modalTitle').text('Modifier une offre');
                 $('#Save').hide();
                 $('#Update').show();
-                $('#Id').val(response.id);
-                $('#Titre').val(response.titre);
+                $('#Id').val(response.Id);
+                $('#Titre').val(response.Titre);
                 $('#dateDebut').val(response.dateDebut);
                 $('#dateFin').val(response.dateFin);
                 $('#nbr_places').val(response.nbr_places);
-                $('#Description').val(response.description);
+                $('#Description').val(response.Description);
             }
         },
         error: function () {
@@ -182,25 +144,26 @@ function Edit(id) {
 
 function Update() {
     var result = Validate();
-    if (result === false) {
+    if (!result) {
         return false;
     }
 
     var formData = {
-        id: $('#Id').val(),
-        titre: $('#Titre').val(),
+        Id: $('#Id').val(),
+        Titre: $('#Titre').val(),
         dateDebut: $('#dateDebut').val(),
         dateFin: $('#dateFin').val(),
         nbr_places: $('#nbr_places').val(),
-        description: $('#Description').val()
+        Description: $('#Description').val()
     };
 
     $.ajax({
         url: '/offre/Update',
         type: 'POST',
-        data: formData,
+        data: JSON.stringify(formData),
+        contentType: 'application/json',
         success: function (response) {
-            if (response == null || response == undefined || response.length === 0) {
+            if (!response) {
                 alert('Impossible de modifier les données');
             } else {
                 HideModal();
@@ -220,7 +183,7 @@ function Delete(id) {
             url: '/offre/Delete?id=' + id,
             type: 'POST',
             success: function (response) {
-                if (response == null || response == undefined) {
+                if (!response) {
                     alert('Impossible de supprimer cette offre');
                 } else {
                     GetOffres();

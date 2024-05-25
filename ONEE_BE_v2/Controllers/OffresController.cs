@@ -14,20 +14,32 @@ namespace ONEE_BE_v2.Controllers
             _context = context;
         }
 
-        [HttpGet]
+        
         public IActionResult Index1()
         {
             return View();
         }
 
-        [HttpGet]
-        public JsonResult GetOffres()
-        {
-            var offres = _context.Offres.ToList();
-            return Json(offres);
-        }
+		[HttpGet]
+		public async Task<JsonResult> GetOffres()
+		{
+			try
+			{
+				var offres = await _context.Offres.ToListAsync();
+				return Json(offres);
+			}
+			catch (Exception ex)
+			{
+				// Gérer l'exception ici, par exemple, en journalisant l'erreur
+				// Vous pouvez également retourner un message d'erreur approprié ou une réponse JSON avec un code d'erreur
+				// Pour l'exemple, je vais simplement retourner une réponse JSON avec le message de l'exception
+				return Json(new { error = ex.Message });
+			}
+		}
 
-        [HttpPost]
+
+
+		[HttpPost]
         public JsonResult Insert(Offre model)
         {
             if (ModelState.IsValid)
