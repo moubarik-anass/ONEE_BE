@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ONEE_BE_v2.Context;
 using ONEE_BE_v2.Models;
@@ -24,32 +19,36 @@ namespace ONEE_BE_v2.Controllers
         {
             return View();
         }
+
         [HttpGet]
         public JsonResult GetOffres()
         {
             var offres = _context.Offres.ToList();
             return Json(offres);
         }
+
         [HttpPost]
         public JsonResult Insert(Offre model)
         {
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 _context.Offres.Add(model);
                 _context.SaveChanges();
-                return Json("les details d offres sont enregistrées");
+                return Json("Les détails de l'offre sont enregistrés");
             }
             else
             {
                 return Json("Problème de validation");
             }
         }
+
         [HttpGet]
         public JsonResult Edit(int id)
         {
-            var offres = _context.Offres.Find(id);
-            return Json(offres);
+            var offre = _context.Offres.Find(id);
+            return Json(offre);
         }
+
         [HttpPost]
         public JsonResult Update(Offre model)
         {
@@ -57,22 +56,23 @@ namespace ONEE_BE_v2.Controllers
             {
                 _context.Offres.Update(model);
                 _context.SaveChanges();
-                return Json("les details d offres sont modifées");
+                return Json("Les détails de l'offre sont modifiés");
             }
             else
             {
                 return Json("Problème de validation");
             }
         }
+
         [HttpPost]
         public JsonResult Delete(int id)
         {
-            var offres = _context.Offres.Find(id);
-            if (offres != null)
+            var offre = _context.Offres.Find(id);
+            if (offre != null)
             {
-                _context.Offres.Remove(offres);
+                _context.Offres.Remove(offre);
                 _context.SaveChanges();
-                return Json("les details d offres sont supprimées");
+                return Json("Les détails de l'offre sont supprimés");
             }
             else
             {

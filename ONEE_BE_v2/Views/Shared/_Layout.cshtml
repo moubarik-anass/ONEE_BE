@@ -4,14 +4,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - ONEE_BE_v2</title>
-    <!--<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />-->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/lib/font-awesome/css/all.css" />
     <link rel="stylesheet" href="~/lib/font-awesome/css/fontawesome.css" />
-    <link rel="stylesheet" href="~/css/site.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/ONEE_BE_v2.styles.css" asp-append-version="true" />
 </head>
 <body>
     <header>
@@ -24,29 +20,19 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <!--<li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>-->
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Offres" asp-action="Index1">Offres</a>
                         </li>
-                        <!--<li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Candidatures" asp-action="Index">Candidatures</a>
-                        </li>-->
-                                <li class="nav-item">
-                                    <div class="dropdown">
-                                <a href="#" class="nav-link text-dark">Candidatures</a>
-                                        <div class="dropdown-content">
-                                    <a asp-area="" asp-controller="Candidatures" asp-action="Index">Candidatures validée</a>
-                                    <a asp-area="" asp-controller="Candidatures_n" asp-action="Index">Candidatures non validée</a>
-                                    <a asp-area="" asp-controller="Candidatures_e" asp-action="Index">Candidatures en cours de traitement</a>
-                                        </div>
-                                    </div>
-                                </li>
-
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-dark" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Candidatures
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Candidatures" asp-action="Index">Candidatures validées</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Candidatures_n" asp-action="Index">Candidatures non validées</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Candidatures_e" asp-action="Index">Candidatures en cours de traitement</a></li>
+                            </ul>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -69,4 +55,3 @@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
-
