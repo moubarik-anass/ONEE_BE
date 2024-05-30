@@ -1,16 +1,16 @@
-$(function () {
+$(document).ready(function () {
     GetOffres();
 });
 
 function GetOffres() {
     $.ajax({
-        url: '/offre/GetOffres',
+        url: '/offres/GetOffres',
         type: 'GET',
         dataType: 'json',
         contentType: 'application/json;charset=utf-8',
         success: function (response) {
             if (!response || response.length === 0) {
-                var object = '<tr><td colspan="7">' +'Aucune offre disponible' + '</td></tr>';
+                var object = '<tr><td colspan="7">' + 'Aucune offre disponible' + '</td></tr>';
                 $('#tblBody').html(object);
             } else {
                 var object = '';
@@ -18,23 +18,20 @@ function GetOffres() {
                     object += '<tr>';
                     object += '<td>' + item.id + '</td>';
                     object += '<td>' + item.titre + '</td>';
-                    object += '<td>' + item.DateDebut + '</td>';
-                    object += '<td>' + item.DateFin + '</td>';
-                    object += '<td>' + item.Nbr_places + '</td>';
+                    object += '<td>' + item.dateDebut + '</td>';
+                    object += '<td>' + item.dateFin + '</td>';
+                    object += '<td>' + item.nbr_places + '</td>';
                     object += '<td>' + item.description + '</td>';
-                    object += '<td><a href="#" class="btn btn-primary btn-sm" onclick="EditData(' + item.Id + ')">Modifier</a> <a href="#" class="btn btn-danger btn-sm" onclick="DeleteData(' + item.Id + ')">Supprimer</a></td>';
+                    object += '<td><a href="#" class="btn btn-primary btn-sm" onclick="Edit(' + item.id + ')">Modifier</a> <a href="#" class="btn btn-danger btn-sm" onclick="Delete(' + item.id + ')">Supprimer</a></td>';
                     object += '</tr>';
                 });
                 $('#tblBody').html(object);
             }
         },
         error: function (xhr, status, error) {
-            // Affichage de l'erreur spécifique
             alert('Impossible d\'afficher les offres : ' + error);
-
-            // Utilisation d'un bloc try-catch pour gérer les erreurs côté client
             try {
-                // Vous pouvez ajouter ici des actions spécifiques à effectuer en cas d'erreur côté client
+                // Actions spécifiques en cas d'erreur côté client
             } catch (ex) {
                 console.error('Erreur côté client : ' + ex.message);
             }
@@ -42,7 +39,7 @@ function GetOffres() {
     });
 }
 
-$('#btnAdd').click(function () {
+$('#btnAdd').on('click', function () {
     $('#OffreModal').modal('show');
     $('#modalTitle').text('Ajouter une offre');
     $('#Save').show();
@@ -57,16 +54,16 @@ function Insert() {
     }
 
     var formData = {
-        Id: $('#Id').val(),
-        Titre: $('#Titre').val(),
-        dateDebut: $('#dateDebut').val(),
-        dateFin: $('#dateFin').val(),
-        nbr_places: $('#nbr_places').val(),
-        Description: $('#Description').val()
+        id: $('#id').val(),
+        titre: $('#Titre').val(),
+        DateDebut: $('#dateDebut').val(),
+        DateFin: $('#dateFin').val(),
+        Nbr_places: $('#nbr_places').val(),
+        description: $('#Description').val()
     };
 
     $.ajax({
-        url: '/offre/Insert',
+        url: '/offres/Insert',
         type: 'POST',
         data: JSON.stringify(formData),
         contentType: 'application/json',
@@ -91,7 +88,7 @@ function HideModal() {
 }
 
 function ClearData() {
-    $('#Id, #Titre, #dateDebut, #dateFin, #nbr_places, #Description').val('');
+    $('#id, #Titre, #dateDebut, #dateFin, #nbr_places, #Description').val('');
     $('#Titre, #dateDebut, #dateFin, #nbr_places, #Description').css('border-color', 'lightgrey');
 }
 
@@ -108,19 +105,20 @@ function Validate() {
     return isValid;
 }
 
-$('#Titre, #dateDebut, #dateFin, #nbr_places, #Description').change(function () {
+$('#Titre, #dateDebut, #dateFin, #nbr_places, #Description').on('change', function () {
     Validate();
 });
 
 function Edit(id) {
     $.ajax({
-        url: '/offre/Edit?id=' + id,
+        url: '/offres/Edit/?id=' + id,
         type: 'GET',
         dataType: 'json',
         contentType: 'application/json;charset=utf-8',
         success: function (response) {
             if (!response) {
                 alert('Impossible de modifier cette offre');
+                console.log("impossible")
             } else if (response.length === 0) {
                 alert('Les données ne sont pas accessibles avec l\'ID ' + id);
             } else {
@@ -128,12 +126,12 @@ function Edit(id) {
                 $('#modalTitle').text('Modifier une offre');
                 $('#Save').hide();
                 $('#Update').show();
-                $('#Id').val(response.Id);
-                $('#Titre').val(response.Titre);
+                $('#id').val(response.id);
+                $('#titre').val(response.titre);
                 $('#dateDebut').val(response.dateDebut);
                 $('#dateFin').val(response.dateFin);
                 $('#nbr_places').val(response.nbr_places);
-                $('#Description').val(response.Description);
+                $('#description').val(response.description);
             }
         },
         error: function () {
@@ -149,26 +147,28 @@ function Update() {
     }
 
     var formData = {
-        Id: $('#Id').val(),
-        Titre: $('#Titre').val(),
+        id: $('#id').val(),
+        titre: $('#titre').val(),
         dateDebut: $('#dateDebut').val(),
         dateFin: $('#dateFin').val(),
         nbr_places: $('#nbr_places').val(),
-        Description: $('#Description').val()
+        description: $('#description').val()
     };
 
     $.ajax({
-        url: '/offre/Update',
+        url: '/offres/Update',
         type: 'POST',
         data: JSON.stringify(formData),
         contentType: 'application/json',
         success: function (response) {
             if (!response) {
                 alert('Impossible de modifier les données');
+                console.log("impossible")
             } else {
                 HideModal();
                 GetOffres();
                 alert(response);
+                console.log("done" + response)
             }
         },
         error: function () {
@@ -180,7 +180,7 @@ function Update() {
 function Delete(id) {
     if (confirm('Vous êtes d\'accord pour supprimer cette offre ?')) {
         $.ajax({
-            url: '/offre/Delete?id=' + id,
+            url: '/offres/Delete?id=' + id,
             type: 'POST',
             success: function (response) {
                 if (!response) {
