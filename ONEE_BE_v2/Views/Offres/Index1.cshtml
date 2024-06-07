@@ -9,7 +9,9 @@
 <div>
     <button class="btn btn-primary mb-2" id="btnAdd">Ajouter une offre</button>
 </div>
-
+<input type="text" class="form-control" id="searchInput" placeholder="Rechercher des offres">
+<button class="btn btn-outline-primary" type="button" id="searchButton">Rechercher</button><br>
+<br>
 <div class="container">
     <table class="table table-success table-striped table-responsive table-hover">
         <thead>
@@ -31,40 +33,44 @@
 <div class="modal" id="OffreModal">
     <div class="modal-dialog">
         <div class="modal-content">
+            
             <div class="modal-header">
                 <h3 class="modal-title" id="modalTitle"></h3>
             </div>
             <div class="modal-body">
-                <input type="hidden" asp-for="Id"  />
+                <input type="hidden" asp-for="Id" id="id" />
                 <div class="mb-2">
                     <label asp-for="Titre"></label>
-                    <input type="text" asp-for="Titre" class="form-control"/>
+                    <input type="text" asp-for="Titre" class="form-control" id="titre"/>
                 </div>
                 <div class="mb-2">
                     <label asp-for="dateDebut"></label>
-                    <input type="date" asp-for="dateDebut" class="form-control" />
+                    <input type="date" asp-for="dateDebut" class="form-control" id="dateDebut" />
                 </div>
                 <div class="mb-2">
                     <label asp-for="dateFin"></label>
-                    <input type="date" asp-for="dateFin" class="form-control" />
+                    <input type="date" asp-for="dateFin" class="form-control" id="dateFin" />
                 </div>
                 <div class="mb-2">
                     <label asp-for="nbr_places"></label>
-                    <input type="number" asp-for="nbr_places" class="form-control"/>
+                    <input type="number" asp-for="nbr_places" class="form-control" id="nbr_places" />
                 </div>
                 <div class="mb-2">
                     <label asp-for="Description"></label>
-                    <input type="text" asp-for="Description" class="form-control" />
+                    <input type="text" asp-for="Description" class="form-control" id="description" />
                 </div>
             </div>
+
             <div class="modal-footer">
                 <button class="btn btn-primary" id="Save" type="button" onclick="Insert();">Enregistrer</button>
                 <button class="btn btn-success" id="Update" type="button" onclick="Update();" style="display:none">Modifier</button>
                 <button class="btn btn-danger" data-bs-dismiss="modal" onclick="HideModal();">Fermer</button>
             </div>
         </div>
+                
     </div>
 </div>
 
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/js/Offre.js"></script>
+<script src="~/js/site.js"></script>

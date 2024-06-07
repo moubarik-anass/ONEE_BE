@@ -40,17 +40,42 @@ namespace ONEE_BE_v2.Controllers
 
 
 		[HttpPost]
-        public JsonResult Insert(Offre model)
+        public JsonResult Insert([FromBody] Offre offres)
         {
             if (ModelState.IsValid)
             {
-                _context.Offres.Add(model);
-                _context.SaveChanges();
-                return Json("Les détails de l'offre sont enregistrés");
+                try
+                {
+                    using (var dbContext = _context)
+                    {
+                        dbContext.Offres.Add(offres);
+                        dbContext.SaveChanges();
+                        return Json("Les détails de l'offre sont enregistrés");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Log the exception and return an error message
+                    return Json(new { error = ex.Message });
+                }
+
+                //_context.Offres.Add(offres);
+                //_context.SaveChanges();
+                // return Json("Les détails de l'offre sont enregistrés");
             }
+
             else
             {
-                return Json("Problème de validation");
+                // Log the ModelState errors
+                var errors = ModelState
+                    .Where(ms => ms.Value.Errors.Count > 0)
+                    .Select(ms => new
+                    {
+                        Field = ms.Key,
+                        Errors = ms.Value.Errors.Select(e => e.ErrorMessage).ToList()
+                    });
+
+                return Json(new { message = "Problème de validation --Insert", errors = errors });
             }
         }
 
@@ -58,22 +83,46 @@ namespace ONEE_BE_v2.Controllers
         public JsonResult Edit(int id)
         {
             var offre = _context.Offres.Find(id);
+            if (offre == null)
+            {
+                return Json("Aucune offre trouvée avec cet ID.");
+            }
             return Json(offre);
         }
 
+
         [HttpPost]
-        public JsonResult Update(Offre model)
+        public JsonResult Update([FromBody] Offre offres)
         {
             if (ModelState.IsValid)
             {
-                _context.Offres.Update(model);
+                _context.Offres.Update(offres);
                 _context.SaveChanges();
                 return Json("Les détails de l'offre sont modifiés");
             }
             else
             {
                 return Json("Problème de validation   -UPDATE");
-            }
+            }/*if (ModelState.IsValid)
+            {
+                var existingOffre = _context.Offres.Find(offres.Id);
+                if (existingOffre != null)
+                {
+                    existingOffre.Titre = offres.Titre;
+                    existingOffre.dateDebut = offres.dateDebut;
+                    existingOffre.dateFin = offres.dateFin;
+                    existingOffre.nbr_places = offres.nbr_places;
+                    existingOffre.Description = offres.Description;
+
+                    _context.Offres.Update(existingOffre);
+                    _context.SaveChanges();
+                    return Json("Les détails de l'offre sont modifiés");
+                }
+                else
+                {
+                    return Json("Aucune offre trouvée avec cet ID.");
+                }
+            }*/
         }
 
         [HttpPost]

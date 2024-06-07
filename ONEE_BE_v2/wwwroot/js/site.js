@@ -66,3 +66,19 @@ document.addEventListener('DOMContentLoaded', function () {
         console.error("Les éléments statusSelect ou descriptionField n'ont pas été trouvés.");
     }
 });
+
+
+$('#searchButton').on('click', function () {
+    var searchValue = $('#searchInput').val().toLowerCase();
+    var filteredData = [];
+
+    // Filtrer les données en fonction de la valeur de recherche
+    $.each(response, function (index, item) {
+        if (item.titre.toLowerCase().includes(searchValue) || item.description.toLowerCase().includes(searchValue)) {
+            filteredData.push(item);
+        }
+    });
+
+    // Mettre à jour la table avec les données filtrées
+    updateTable(filteredData);
+});
