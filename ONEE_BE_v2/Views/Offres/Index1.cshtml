@@ -1,39 +1,21 @@
 ﻿@model ONEE_BE_v2.Models.Offre
-
 @{
     ViewData["Title"] = "Liste des offres";
 }
-
 <h3>@ViewData["Title"]</h3>
-
+<link href="https://unpkg.com/tabulator-tables@5.4.3/dist/css/tabulator.min.css" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="https://unpkg.com/tabulator-tables@5.4.3/dist/js/tabulator.min.js"></script>
 <div>
     <button class="btn btn-primary mb-2" id="btnAdd">Ajouter une offre</button>
 </div>
 <input type="text" class="form-control" id="searchInput" placeholder="Rechercher des offres">
-<button class="btn btn-outline-primary" type="button" id="searchButton">Rechercher</button><br>
 <br>
-<div class="container">
-    <table class="table table-success table-striped table-responsive table-hover">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Titre</th>
-                <th>Date Début</th>
-                <th>Date Fin</th>
-                <th>Nombre de places</th>
-                <th>Description</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody id="tblBody">
-        </tbody>
-    </table>
-</div>
-
+<br>
+<div id="tabulatorContainer"></div>
 <div class="modal" id="OffreModal">
     <div class="modal-dialog">
         <div class="modal-content">
-            
             <div class="modal-header">
                 <h3 class="modal-title" id="modalTitle"></h3>
             </div>
@@ -41,7 +23,7 @@
                 <input type="hidden" asp-for="Id" id="id" />
                 <div class="mb-2">
                     <label asp-for="Titre"></label>
-                    <input type="text" asp-for="Titre" class="form-control" id="titre"/>
+                    <input type="text" asp-for="Titre" class="form-control" id="titre" />
                 </div>
                 <div class="mb-2">
                     <label asp-for="dateDebut"></label>
@@ -60,17 +42,14 @@
                     <input type="text" asp-for="Description" class="form-control" id="description" />
                 </div>
             </div>
-
             <div class="modal-footer">
                 <button class="btn btn-primary" id="Save" type="button" onclick="Insert();">Enregistrer</button>
                 <button class="btn btn-success" id="Update" type="button" onclick="Update();" style="display:none">Modifier</button>
                 <button class="btn btn-danger" data-bs-dismiss="modal" onclick="HideModal();">Fermer</button>
             </div>
         </div>
-                
     </div>
 </div>
-
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/js/Offre.js"></script>
 <script src="~/js/site.js"></script>

@@ -1,18 +1,20 @@
 $(document).ready(function () {
-    GetOffres();
+    InitTabulator();
 });
+
 function formatDate(dateString) {
-    // Create a new Date object from the date string
     let date = new Date(dateString);
-
-    // Get the year, month, and day parts
     let year = date.getFullYear();
-    let month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-based
+    let month = (date.getMonth() + 1).toString().padStart(2, '0');
     let day = date.getDate().toString().padStart(2, '0');
-
-    // Return the formatted date string
     return `${year}-${month}-${day}`;
-};
+}
+
+function InitTabulator() {
+    GetOffres();
+    // Gestionnaire d'événements pour le clic sur le bouton de recherche
+}
+
 function GetOffres() {
     $.ajax({
         url: '/offres/GetOffres',
@@ -20,33 +22,56 @@ function GetOffres() {
         dataType: 'json',
         contentType: 'application/json;charset=utf-8',
         success: function (response) {
-            if (!response || response.length === 0) {
-                var object = '<tr><td colspan="7">' + 'Aucune offre disponible' + '</td></tr>';
-                $('#tblBody').html(object);
-            } else {
-                console.log(response);
-                var object = '';
-                var searchTerm = $('#searchInput').val().toLowerCase();
-                var offresTrouvees = false;
+            var tabulatorData = [];
+            if (response && response.length > 0) {
                 $.each(response, function (index, item) {
-                    if (item.titre.toLowerCase().includes(searchTerm)) {
-                        offresTrouvees = true;
-                        object += '<tr>';
-                        object += '<td>' + item.id + '</td>';
-                        object += '<td>' + item.titre + '</td>';
-                        object += '<td>' + formatDate(item.dateDebut) + '</td>';
-                        object += '<td>' + formatDate(item.dateFin) + '</td>';
-                        object += '<td>' + item.nbr_places + '</td>';
-                        object += '<td>' + item.description + '</td>';
-                        object += '<td><a href="#" class="btn btn-primary btn-sm" onclick="Edit(' + item.id + ')">Modifier</a> <a href="#" class="btn btn-danger btn-sm" onclick="Delete(' + item.id + ')">Supprimer</a></td>';
-                        object += '</tr>';
-                    }
+                    tabulatorData.push({
+                        id: item.id,
+                        titre: item.titre,
+                        dateDebut: formatDate(item.dateDebut),
+                        dateFin: formatDate(item.dateFin),
+                        nbr_places: item.nbr_places,
+                        description: item.description
+                    });
                 });
-                if (!offresTrouvees) {
-                    object = '<tr><td colspan="7">' + 'Aucune offre correspondant à la recherche' + '</td></tr>';
-                }
-                $('#tblBody').html(object);
             }
+
+            var table = new Tabulator("#tabulatorContainer", {
+                data: tabulatorData,
+                layout: "fitColumns",
+                columns: [
+                    { title: "Id", field: "id" },
+                    { title: "Titre", field: "titre" },
+                    { title: "Date Début", field: "dateDebut" },
+                    { title: "Date Fin", field: "dateFin" },
+                    { title: "Nombre de places", field: "nbr_places" },
+                    { title: "Description", field: "description" },
+                    {
+                        title: "Actions",
+                        formatter: function (cell, formatterParams) {
+                            var id = cell.getData().id;
+                            return "<button class='btn btn-primary btn-sm' onclick='Edit(" + id + ")'>Modifier</button> " +
+                                "<button class='btn btn-danger btn-sm' onclick='Delete(" + id + ")'>Supprimer</button>";
+                        }
+                    }
+                ]
+            });
+
+            // Fonction de recherche dynamique
+            $("#searchInput").on("input", function () {
+                var searchText = $(this).val().toLowerCase();
+                if (searchText.trim() === "") {
+                    table.setData(tabulatorData); // Afficher toutes les offres si la recherche est vide
+                } else {
+                    var filteredData = tabulatorData.filter(function (item) {
+                        return item.titre.toLowerCase().includes(searchText);
+                    });
+                    table.setData(filteredData); // Afficher les offres filtrées selon le titre
+                }
+            });
+
+            $("#tabulatorContainer").show(); // Afficher la table une fois que les données sont chargées
+
         },
         error: function (xhr, status, error) {
             alert('Impossible d\'afficher les offres : ' + error);
@@ -59,9 +84,8 @@ function GetOffres() {
     });
 }
 
-$('#searchButton').click(function () {
-    GetOffres();
-});
+
+
 
 $('#btnAdd').on('click', function () {
     $('#OffreModal').modal('show');
@@ -140,11 +164,8 @@ function Edit(id) {
         dataType: 'json',
         contentType: 'application/json;charset=utf-8',
         success: function (response) {
-            selectedItemID = id;
-            console.log(selectedItemID)
             if (!response) {
                 alert('Impossible de modifier cette offre');
-                console.log("impossible")
             } else if (response.length === 0) {
                 alert('Les données ne sont pas accessibles avec l\'ID ' + id);
             } else {
@@ -189,12 +210,10 @@ function Update() {
         success: function (response) {
             if (!response) {
                 alert('Impossible de modifier les données');
-                console.log("impossible")
             } else {
                 HideModal();
                 GetOffres();
                 alert(response);
-                console.log("done" + response)
             }
         },
         error: function () {
@@ -202,17 +221,21 @@ function Update() {
         }
     });
 }
+function HideEditModal() {
+    $('#OffreModal').hide();
+}
 
 function Delete(id) {
     if (confirm('Vous êtes d\'accord pour supprimer cette offre ?')) {
         $.ajax({
-            url: '/offres/Delete?id=' + id,
+            url: '/offres/Delete/?id=' + id,
             type: 'POST',
             success: function (response) {
                 if (!response) {
                     alert('Impossible de supprimer cette offre');
                 } else {
                     GetOffres();
+                    HideEditModal();
                 }
             },
             error: function () {
