@@ -19,10 +19,16 @@ namespace ONEE_BE_v2.Controllers
             _context = context;
         }
 
-        // GET: Candidatures
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            return View(await _context.Candidatures.ToListAsync());
+            return View();
+        }
+
+        [HttpGet]
+        public async Task<JsonResult> GetCandidatures()
+        {
+            var candidatures = await _context.Candidatures.ToListAsync();
+            return Json(candidatures);
         }
 
         // GET: Candidatures/Details/5

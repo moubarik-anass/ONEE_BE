@@ -1,72 +1,19 @@
 ﻿@model IEnumerable<ONEE_BE_v2.Models.Candidature>
-
 @{
     ViewData["Title"] = "Candidatures";
 }
 
-<h1>Index</h1>
+<h1>Candidatures</h1>
+<link href="https://unpkg.com/tabulator-tables@5.4.3/dist/css/tabulator.min.css" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="https://unpkg.com/tabulator-tables@5.4.3/dist/js/tabulator.min.js"></script>
 
-<!--<p>
-    <a asp-action="Create">Create New</a>
-</p>-->
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Id)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Nom)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Prenom)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Email)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.datepostulation)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Emploiprecedent)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.statusfamiliale)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.Where(c => c.Status.Equals("Validé", StringComparison.OrdinalIgnoreCase)))
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Id)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Nom)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Prenom)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Email)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.datepostulation)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Emploiprecedent)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.statusfamiliale)
-                </td>
-                <td>
-                    <!--<a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary"><i class="fa fa-pencil"></i>Edit</a> |-->
-                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary"><i class="fa fa-eye"></i>Details</a>
-                    <!--<a asp-action="Delete" asp-route-id="@item.Id">Delete</a>-->
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<!--<input type="text" class="form-control" id="searchInput1" placeholder="Rechercher des candidatures">-->
+<div style="margin-top: 30px;"></div>
+<div id="tabulatorContainer"></div>
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tabulator/5.1.0/js/tabulator.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tabulator/5.1.0/js/modules/virtual-dom/vertical.js"></script>
+    <script src="~/js/Candidature.js"></script>
+}

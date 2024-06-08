@@ -84,9 +84,6 @@ function GetOffres() {
     });
 }
 
-
-
-
 $('#btnAdd').on('click', function () {
     $('#OffreModal').modal('show');
     $('#modalTitle').text('Ajouter une offre');
