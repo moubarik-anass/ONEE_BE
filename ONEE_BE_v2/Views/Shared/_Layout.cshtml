@@ -20,7 +20,7 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                                                <li class="nav-item">
+                        <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Dashboard" asp-action="Index">Dashboard</a>
                         </li>
                         <li class="nav-item">
@@ -37,6 +37,49 @@
                             </ul>
                         </li>
                     </ul>
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="#" id="menuToggle">
+                                <i class="fas fa-user"></i>
+                            </a>
+                            <ul id="dropdownMenu" class="dropdown-menu">
+                                <li><a class="dropdown-item">Prenom : @User.FindFirst("Prenom")?.Value</a></li>
+                                <li><a class="dropdown-item">Nom :  @User.FindFirst("Nom")?.Value</a></li>
+                                <li><a class="dropdown-item">Matricule : @User.FindFirst(ClaimTypes.Name)?.Value</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <form asp-controller="Recruteur" asp-action="Logout" method="post">
+                                <button type="submit" class="btn btn-danger  btn-deconnexion">Déconnexion</button>
+                                <style>
+                                    .btn-deconnexion {
+                                        margin: 0 10px; /* Ajoute de la marge horizontale */
+                                    }
+
+                                    .user-icon {
+                                        margin-top: -2px; /* Ajustement vers le haut */
+                                        margin-left: -2px;
+                                    }
+                                </style>
+                            </form>
+                        </li>
+                    </ul>
+                    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                    <script>
+                        $(document).ready(function () {
+                            $('#menuToggle').click(function () {
+                                $('#dropdownMenu').toggle();
+                            });
+
+                            // Pour masquer le dropdown-menu si on clique en dehors
+                            $(document).on('click', function (event) {
+                                if (!$(event.target).closest('#menuToggle').length && !$(event.target).closest('.dropdown-menu').length) {
+                                    $('#dropdownMenu').hide();
+                                }
+                            });
+                        });
+                    </script>
+
                 </div>
             </div>
         </nav>
@@ -47,14 +90,16 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <!--<footer class="border-top footer text-muted">
         <div class="container">
             &copy; 2024 - ONEE_BE_v2 - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
-    </footer>
+    </footer>-->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+    @using System.Security.Claims
 </body>
 </html>

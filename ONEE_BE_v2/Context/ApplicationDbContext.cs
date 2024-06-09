@@ -18,5 +18,7 @@ namespace ONEE_BE_v2.Context
 
         // Déclaration de DbSet pour Archives
         //public DbSet<Archives> Archives { get; set; }
+        public DbSet<Recruteur> Recruteurs { get; set; }
+
     }
 }

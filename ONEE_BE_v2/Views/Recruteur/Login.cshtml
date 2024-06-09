@@ -1,0 +1,129 @@
+﻿@model Recruteur
+
+@{
+    ViewData["Title"] = "Login";
+    Layout = null;
+}
+
+<h2>Connexion</h2>
+<style>
+    /* Styles généraux */
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f2f2f2;
+    }
+
+    .container {
+        max-width: 400px;
+        margin: 0 auto;
+        margin-top: 100px;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    /* Styles du formulaire */
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    input[type="submit"] {
+        width: 100%;
+        padding: 10px;
+        background-color: #4CAF50;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+    .text-danger {
+        color: red;
+    }
+</style>
+<script>
+    // Fonction pour masquer/afficher le mot de passe
+    function togglePasswordVisibility() {
+        var passwordInput = document.getElementById("MotDePasse");
+        var toggleButton = document.getElementById("togglePasswordVisibility");
+
+        if (passwordInput.type === "password") {
+            passwordInput.type = "text";
+            toggleButton.textContent = "Masquer le mot de passe";
+        } else {
+            passwordInput.type = "password";
+            toggleButton.textContent = "Afficher le mot de passe";
+        }
+    }
+
+    // Fonction pour vérifier si les champs sont remplis avant la soumission du formulaire
+    function validateForm() {
+        var matriculeInput = document.getElementById("Matricule");
+        var passwordInput = document.getElementById("MotDePasse");
+
+        if (matriculeInput.value.trim() === "" || passwordInput.value.trim() === "") {
+            alert("Veuillez remplir tous les champs obligatoires.");
+            return false;
+        }
+
+        return true;
+    }
+
+    // Ajout d'un écouteur d'événement pour la soumission du formulaire
+    var loginForm = document.querySelector("form");
+    loginForm.addEventListener("submit", function (event) {
+        if (!validateForm()) {
+            event.preventDefault();
+        }
+    });
+</script>
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Login" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Matricule" class="control-label"></label>
+                <input asp-for="Matricule" class="form-control" />
+                <span asp-validation-for="Matricule" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MotDePasse" class="control-label"></label>
+                <input asp-for="MotDePasse" type="password" class="form-control" />
+                <span asp-validation-for="MotDePasse" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Connexion" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

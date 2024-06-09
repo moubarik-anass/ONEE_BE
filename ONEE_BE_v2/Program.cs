@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using ONEE_BE_v2.Context;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,10 +8,21 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 var ConnectionStrings = builder.Configuration.GetConnectionString("DefaultConnection");
-
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-options.UseMySql(ConnectionStrings, ServerVersion.AutoDetect(ConnectionStrings))
+    options.UseMySql(ConnectionStrings, ServerVersion.AutoDetect(ConnectionStrings))
 );
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Recruteur/Login"; // Spécifiez le chemin d'accès pour la vue de connexion
+        options.ExpireTimeSpan = TimeSpan.FromSeconds(15); // Définir la durée de vie du cookie à 300 secondes (5 minutes)
+        options.Events.OnRedirectToAccessDenied = context =>
+        {
+            context.Response.StatusCode = 401; // Définir le code d'état HTTP 401 (Non autorisé)
+            return Task.CompletedTask;
+        };
+    });
 
 var app = builder.Build();
 
@@ -18,19 +30,18 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
-
 app.UseStaticFiles();
-
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Offres}/{action=Index1}/{id?}");
+    pattern: "{controller=Recruteur}/{action=Login}/{id?}");
+
 app.Run();

@@ -2,9 +2,11 @@
 using Microsoft.EntityFrameworkCore;
 using ONEE_BE_v2.Context;
 using ONEE_BE_v2.Models;
+using Microsoft.AspNetCore.Authorization; 
 
 namespace ONEE_BE_v2.Controllers
 {
+    [Authorize]
     public class OffresController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -14,13 +16,13 @@ namespace ONEE_BE_v2.Controllers
             _context = context;
         }
 
-        
+        [Authorize]
         public IActionResult Index1()
         {
             return View();
         }
-
-		[HttpGet]
+        [Authorize]
+        [HttpGet]
 		public async Task<JsonResult> GetOffres()
 		{
 			try
@@ -38,8 +40,8 @@ namespace ONEE_BE_v2.Controllers
 		}
 
 
-
-		[HttpPost]
+        [Authorize]
+        [HttpPost]
         public JsonResult Insert([FromBody] Offre offres)
         {
             if (ModelState.IsValid)
@@ -78,7 +80,7 @@ namespace ONEE_BE_v2.Controllers
                 return Json(new { message = "Problème de validation --Insert", errors = errors });
             }
         }
-
+        [Authorize]
         [HttpGet]
         public JsonResult Edit(int id)
         {
@@ -90,7 +92,7 @@ namespace ONEE_BE_v2.Controllers
             return Json(offre);
         }
 
-
+        [Authorize]
         [HttpPost]
         public JsonResult Update([FromBody] Offre offres)
         {
@@ -124,7 +126,7 @@ namespace ONEE_BE_v2.Controllers
                 }
             }*/
         }
-
+        [Authorize]
         [HttpPost]
         public JsonResult Delete(int id)
         {

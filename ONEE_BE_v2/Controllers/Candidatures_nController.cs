@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ONEE_BE_v2.Context;
 using ONEE_BE_v2.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ONEE_BE_v2.Controllers
 {
+    [Authorize]
     public class Candidatures_nController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -19,13 +21,13 @@ namespace ONEE_BE_v2.Controllers
             _context = context;
         }
 
-        // GET: Candidatures
+        [Authorize]
         public async Task<IActionResult> Index()
         {
             return View(await _context.Candidatures.ToListAsync());
         }
 
-        // GET: Candidatures/Details/5
+        [Authorize]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -43,15 +45,13 @@ namespace ONEE_BE_v2.Controllers
             return View(candidature);
         }
 
-        // GET: Candidatures/Create
+        [Authorize]
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Candidatures/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Nom,Prenom,Email,motdepasse,datepostulation,ville,Adresse,Emploiprecedent,nompere,nommere,datenaissance,statusfamiliale,Status")] Candidature candidature)
@@ -65,7 +65,7 @@ namespace ONEE_BE_v2.Controllers
             return View(candidature);
         }
 
-        // GET: Candidatures/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -81,9 +81,7 @@ namespace ONEE_BE_v2.Controllers
             return View(candidature);
         }
 
-        // POST: Candidatures/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Status,description")] Candidature candidature)
@@ -129,7 +127,7 @@ namespace ONEE_BE_v2.Controllers
         }
 
 
-        // GET: Candidatures/Delete/5
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -147,7 +145,7 @@ namespace ONEE_BE_v2.Controllers
             return View(candidature);
         }
 
-        // POST: Candidatures/Delete/5
+        [Authorize]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

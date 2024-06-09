@@ -12,7 +12,7 @@ using ONEE_BE_v2.Context;
 namespace ONEE_BE_v2.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240521061918_initial1")]
+    [Migration("20240609142038_initial1")]
     partial class initial1
     {
         /// <inheritdoc />
@@ -109,6 +109,39 @@ namespace ONEE_BE_v2.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Offres");
+                });
+
+            modelBuilder.Entity("ONEE_BE_v2.Models.Recruteur", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Matricule")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("MotDePasse")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Nom")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Prenom")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Recruteurs");
                 });
 #pragma warning restore 612, 618
         }
