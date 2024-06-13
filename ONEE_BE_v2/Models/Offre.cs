@@ -24,5 +24,8 @@ namespace ONEE_BE_v2.Models
 
 		[Required]
 		public string Description { get; set; }
-	}
+        [Required]
+        public string Status { get; set; }
+
+    }
 }

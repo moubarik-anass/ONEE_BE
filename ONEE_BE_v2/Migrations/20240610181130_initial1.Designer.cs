@@ -12,7 +12,7 @@ using ONEE_BE_v2.Context;
 namespace ONEE_BE_v2.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240609142038_initial1")]
+    [Migration("20240610181130_initial1")]
     partial class initial1
     {
         /// <inheritdoc />
@@ -20,7 +20,7 @@ namespace ONEE_BE_v2.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.5")
+                .HasAnnotation("ProductVersion", "8.0.6")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
@@ -90,6 +90,10 @@ namespace ONEE_BE_v2.Migrations
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("longtext");
 

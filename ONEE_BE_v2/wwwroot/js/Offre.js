@@ -2,17 +2,9 @@ $(document).ready(function () {
     InitTabulator();
 });
 
-function formatDate(dateString) {
-    let date = new Date(dateString);
-    let year = date.getFullYear();
-    let month = (date.getMonth() + 1).toString().padStart(2, '0');
-    let day = date.getDate().toString().padStart(2, '0');
-    return `${year}-${month}-${day}`;
-}
 
 function InitTabulator() {
     GetOffres();
-    // Gestionnaire d'événements pour le clic sur le bouton de recherche
 }
 
 function GetOffres() {
@@ -24,7 +16,12 @@ function GetOffres() {
         success: function (response) {
             var tabulatorData = [];
             if (response && response.length > 0) {
-                $.each(response, function (index, item) {
+                // Filtrer les offres avec un statut "actif"
+                var offresActives = response.filter(function (item) {
+                    return item.status === "active";
+                });
+
+                $.each(offresActives, function (index, item) {
                     tabulatorData.push({
                         id: item.id,
                         titre: item.titre,
@@ -51,7 +48,7 @@ function GetOffres() {
                         formatter: function (cell, formatterParams) {
                             var id = cell.getData().id;
                             return "<button class='btn btn-primary btn-sm' onclick='Edit(" + id + ")'>Modifier</button> " +
-                                "<button class='btn btn-danger btn-sm' onclick='Delete(" + id + ")'>Supprimer</button>";
+                                "<button class='btn btn-danger btn-sm' onclick='Archive(" + id + ")'>Archiver</button>";
                         }
                     }
                 ]
@@ -84,6 +81,74 @@ function GetOffres() {
     });
 }
 
+/*function GetOffres1() {
+    $.ajax({
+        url: '/OffresArchivee/GetOffres1',
+        type: 'GET',
+        dataType: 'json',
+        contentType: 'application/json;charset=utf-8',
+        success: function (response) {
+            var tabulatorData = [];
+            if (response && response.length > 0) {
+                // Filtrer les offres avec un statut "actif"
+                var offresActives = response.filter(function (item) {
+                    return item.status === "archive" || item.status === "archivee"; // Assurez-vous que le champ status correspond à votre structure de données
+                });
+                $.each(offresActives, function (index, item) {
+                    tabulatorData.push({
+                        id: item.id,
+                        titre: item.titre,
+                        dateDebut: formatDate(item.dateDebut),
+                        dateFin: formatDate(item.dateFin),
+                        nbr_places: item.nbr_places,
+                        description: item.description
+                    });
+                });
+            }
+            var table = new Tabulator("#tabulatorContainer", {
+                data: tabulatorData,
+                layout: "fitColumns",
+                columns: [
+                    { title: "Id", field: "id" },
+                    { title: "Titre", field: "titre" },
+                    { title: "Date Début", field: "dateDebut" },
+                    { title: "Date Fin", field: "dateFin" },
+                    { title: "Nombre de places", field: "nbr_places" },
+                    { title: "Description", field: "description" }
+                    /*{
+                        title: "Actions",
+                        formatter: function (cell, formatterParams) {
+                            var id = cell.getData().id;
+                            return "<button class='btn btn-primary btn-sm' onclick='Edit(" + id + ")'>Modifier</button> " +
+                                "<button class='btn btn-danger btn-sm' onclick='Delete(" + id + ")'>Supprimer</button>";
+                        }
+                    }
+                ]
+            });
+            $("#searchInput").on("input", function () {
+                var searchText = $(this).val().toLowerCase();
+                if (searchText.trim() === "") {
+                    table.setData(tabulatorData); // Afficher toutes les offres si la recherche est vide
+                } else {
+                    var filteredData = tabulatorData.filter(function (item) {
+                        return item.titre.toLowerCase().includes(searchText);
+                    });
+                    table.setData(filteredData); // Afficher les offres filtrées selon le titre
+                }
+            });
+            $("#tabulatorContainer").show(); // Afficher la table une fois que les données sont chargées
+        },
+        error: function (xhr, status, error) {
+            alert('Impossible d\'afficher les offres : ' + error);
+            try {
+                // Actions spécifiques en cas d'erreur côté client
+            } catch (ex) {
+                console.error('Erreur côté client : ' + ex.message);
+            }
+        }
+    });
+}
+*/
 $('#btnAdd').on('click', function () {
     $('#OffreModal').modal('show');
     $('#modalTitle').text('Ajouter une offre');
@@ -119,12 +184,21 @@ function Insert() {
                 HideModal();
                 GetOffres();
                 alert(response);
+                console.log(response);
             }
         },
         error: function () {
             alert('Impossible d\'enregistrer les données');
         }
     });
+}
+
+function formatDate(dateString) {
+    let date = new Date(dateString);
+    let year = date.getFullYear();
+    let month = (date.getMonth() + 1).toString().padStart(2, '0');
+    let day = date.getDate().toString().padStart(2, '0');
+    return `${day}-${month}${year}-${year}`;
 }
 
 function HideModal() {
@@ -241,3 +315,23 @@ function Delete(id) {
         });
     }
 }
+function Archive(id) {
+    if (confirm('Vous êtes d\'accord pour archiver cette offre ?')) {
+        $.ajax({
+            url: '/offres/Archive/?id=' + id,
+            type: 'POST',
+            success: function (response) {
+                if (!response) {
+                    alert('Impossible d\'archiver cette offre');
+                } else {
+                    GetOffres();
+                    HideEditModal();
+                }
+            },
+            error: function () {
+                alert('Impossible d\'archiver cette offre');
+            }
+        });
+    }
+}
+

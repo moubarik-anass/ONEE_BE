@@ -44,7 +44,7 @@ namespace ONEE_BE_v2.Controllers
                 var authProperties = new AuthenticationProperties
                 {
                     IsPersistent = false, // Ne pas conserver le cookie après la fermeture du navigateur
-                    ExpiresUtc = DateTimeOffset.UtcNow.AddSeconds(15) // Définir la durée de vie du cookie à 300 secondes (5 minutes)
+                    ExpiresUtc = DateTimeOffset.UtcNow.AddSeconds(60) // Définir la durée de vie du cookie à 300 secondes (5 minutes)
                 };
 
                 await HttpContext.SignInAsync(

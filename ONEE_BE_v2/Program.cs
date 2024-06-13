@@ -16,7 +16,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     .AddCookie(options =>
     {
         options.LoginPath = "/Recruteur/Login"; // Spécifiez le chemin d'accès pour la vue de connexion
-        options.ExpireTimeSpan = TimeSpan.FromSeconds(15); // Définir la durée de vie du cookie à 300 secondes (5 minutes)
+        options.ExpireTimeSpan = TimeSpan.FromSeconds(60); // Définir la durée de vie du cookie à 300 secondes (5 minutes)
         options.Events.OnRedirectToAccessDenied = context =>
         {
             context.Response.StatusCode = 401; // Définir le code d'état HTTP 401 (Non autorisé)

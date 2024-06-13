@@ -1,15 +1,13 @@
 ﻿@model ONEE_BE_v2.Models.Offre
 @{
-    ViewData["Title"] = "Liste des offres";
+    ViewData["Title"] = "Liste des offres archivées";
 }
 <h3>@ViewData["Title"]</h3>
 <link rel="stylesheet" href="~/css//site.css" />
 <link href="https://unpkg.com/tabulator-tables@5.4.3/dist/css/tabulator.min.css" rel="stylesheet">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="text/javascript" src="https://unpkg.com/tabulator-tables@5.4.3/dist/js/tabulator.min.js"></script>
-<div>
-    <button class="btn btn-primary mb-2" id="btnAdd">Ajouter une offre</button>
-</div>
+<link href="https://unpkg.com/tabulator-tables@5.4.3/dist/css/tabulator.min.css" rel="stylesheet">
 <input type="text" class="form-control" id="searchInput" placeholder="Rechercher des offres">
 <br>
 <br>
@@ -43,14 +41,21 @@
                     <input type="text" asp-for="Description" class="form-control" id="description" />
                 </div>
             </div>
-            <div class="modal-footer">
+            <!--<div class="modal-footer">
                 <button class="btn btn-primary" id="Save" type="button" onclick="Insert();">Enregistrer</button>
                 <button class="btn btn-success" id="Update" type="button" onclick="Update();" style="display:none">Modifier</button>
                 <button class="btn btn-danger" data-bs-dismiss="modal" onclick="HideModal();">Fermer</button>
-            </div>
+            </div>-->
         </div>
     </div>
 </div>
-<script src="~/lib/jquery/dist/jquery.min.js"></script>
-<script src="~/js/Offre.js"></script>
+
+<!-- Inclure Bootstrap -->
+<link href="https://stackpath.²bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Inclure Tabulator -->
+<script type="text/javascript" src="https://unpkg.com/tabulator-tables@5.4.3/dist/js/tabulator.min.js"></script>
+<!-- Inclure vos scripts -->
+<script src="~/js/Offre2.js"></script>
 <script src="~/js/site.js"></script>
+<link rel="stylesheet" href="~/css//site.css" />

@@ -1,3 +1,12 @@
+.btn-deconnexion {
+    margin: 0 10px; /* Ajoute de la marge horizontale */
+}
+
+.user-icon {
+    margin-top: -2px; /* Ajustement vers le haut */
+    margin-left: -2px;
+}
+
 html {
   font-size: 14px;
 }
