@@ -118,10 +118,10 @@
                         });
                     } else if (startDate && endDate) {
                         tabulatorData = response.filter(function (item) {
-                            let itemDate = new Date(item.datepostulation);
-                            let startDateObj = new Date(startDate);
-                            let endDateObj = new Date(endDate);
-                            return (itemDate >= startDateObj && itemDate <= endDateObj) && (item.status === "validé" || item.status === "valide");
+                            let itemDate = new Date(item.datepostulation).getTime();
+                            let startDateObj = new Date(startDate).getTime();
+                            let endDateObj = new Date(endDate).getTime() + 86400000;
+                            return (itemDate >= startDateObj && itemDate < endDateObj) && (item.status === "validé" || item.status === "valide");
                         });
                     } else if (!startDate && endDate) {
                         tabulatorData = response.filter(function (item) {

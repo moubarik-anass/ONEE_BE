@@ -19,7 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="IdentityFramework.Core" Version="2.3.1" />
     <PackageReference Include="jQuery" Version="3.7.1" />
     <PackageReference Include="jQuery.Validation" Version="1.20.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />

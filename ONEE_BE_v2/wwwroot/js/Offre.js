@@ -25,8 +25,8 @@ function GetOffres() {
                     tabulatorData.push({
                         id: item.id,
                         titre: item.titre,
-                        dateDebut: formatDate(item.dateDebut),
-                        dateFin: formatDate(item.dateFin),
+                        dateDebut: formatDate0(item.dateDebut),
+                        dateFin: formatDate0(item.dateFin),
                         nbr_places: item.nbr_places,
                         description: item.description
                     });
@@ -193,12 +193,20 @@ function Insert() {
     });
 }
 
+function formatDate0(dateString) {
+    let date = new Date(dateString);
+    let year = date.getFullYear();
+    let month = (date.getMonth() + 1).toString().padStart(2, '0');
+    let day = date.getDate().toString().padStart(2, '0');
+    return `${day}-${month}-${year}`;
+}
+
 function formatDate(dateString) {
     let date = new Date(dateString);
     let year = date.getFullYear();
     let month = (date.getMonth() + 1).toString().padStart(2, '0');
     let day = date.getDate().toString().padStart(2, '0');
-    return `${day}-${month}${year}-${year}`;
+    return `${year}-${month}-${day}`;
 }
 
 function HideModal() {

@@ -44,12 +44,13 @@ namespace ONEE_BE_v2.Controllers
         [HttpPost]
         public JsonResult Insert([FromBody] Offre offres)
         {
-            if (ModelState.IsValid)
-            {
+            //if (ModelState.IsValid)
+            //{
                 try
                 {
                     using (var dbContext = _context)
                     {
+                        offres.Status = "active";
                         dbContext.Offres.Add(offres);
                         dbContext.SaveChanges();
                         return Json("Les détails de l'offre sont enregistrés");
@@ -59,20 +60,20 @@ namespace ONEE_BE_v2.Controllers
                 {
                     return Json(new { error = ex.Message });
                 }
-            }
-            else
-            {
-                // Log the ModelState errors
-                var errors = ModelState
-                    .Where(ms => ms.Value.Errors.Count > 0)
-                    .Select(ms => new
-                    {
-                        Field = ms.Key,
-                        Errors = ms.Value.Errors.Select(e => e.ErrorMessage).ToList()
-                    });
+            //}
+            //else
+            //{
+            //    // Log the ModelState errors
+            //    var errors = ModelState
+            //        .Where(ms => ms.Value.Errors.Count > 0)
+            //        .Select(ms => new
+            //        {
+            //            Field = ms.Key,
+            //            Errors = ms.Value.Errors.Select(e => e.ErrorMessage).ToList()
+            //        });
 
-                return Json(new { message = "Problème de validation --Insert", errors = errors });
-            }
+            //    return Json(new { message = "Problème de validation --Insert", errors = errors });
+            //}
         }
 
         [Authorize]
@@ -91,8 +92,8 @@ namespace ONEE_BE_v2.Controllers
         [HttpPost]
         public JsonResult Update([FromBody] Offre offres)
         {
-            if (ModelState.IsValid)
-            {
+            //if (ModelState.IsValid)
+            //{
                 var existingOffre = _context.Offres.Find(offres.Id);
                 if (existingOffre != null)
                 {
@@ -110,20 +111,20 @@ namespace ONEE_BE_v2.Controllers
                 {
                     return Json("Aucune offre trouvée avec cet ID.");
                 }
-            }
-            else
-            {
-                // Log the ModelState errors
-                var errors = ModelState
-                    .Where(ms => ms.Value.Errors.Count > 0)
-                    .Select(ms => new
-                    {
-                        Field = ms.Key,
-                        Errors = ms.Value.Errors.Select(e => e.ErrorMessage).ToList()
-                    });
+            //}
+            //else
+            //{
+            //    // Log the ModelState errors
+            //    var errors = ModelState
+            //        .Where(ms => ms.Value.Errors.Count > 0)
+            //        .Select(ms => new
+            //        {
+            //            Field = ms.Key,
+            //            Errors = ms.Value.Errors.Select(e => e.ErrorMessage).ToList()
+            //        });
 
-                return Json(new { message = "Problème de validation --Update", errors = errors });
-            }
+            //    return Json(new { message = "Problème de validation --Update", errors = errors });
+            //}
         }
 
         [Authorize]
