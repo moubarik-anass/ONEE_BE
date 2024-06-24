@@ -78,6 +78,36 @@ namespace ONEE_BE_v2.Migrations
                     b.ToTable("Candidatures");
                 });
 
+            modelBuilder.Entity("ONEE_BE_v2.Models.Document", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CandidatureId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("FileType")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Path")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CandidatureId");
+
+                    b.ToTable("Documents");
+                });
+
             modelBuilder.Entity("ONEE_BE_v2.Models.Offre", b =>
                 {
                     b.Property<int>("Id")
@@ -143,6 +173,22 @@ namespace ONEE_BE_v2.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Recruteurs");
+                });
+
+            modelBuilder.Entity("ONEE_BE_v2.Models.Document", b =>
+                {
+                    b.HasOne("ONEE_BE_v2.Models.Candidature", "Candidature")
+                        .WithMany("Documents")
+                        .HasForeignKey("CandidatureId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Candidature");
+                });
+
+            modelBuilder.Entity("ONEE_BE_v2.Models.Candidature", b =>
+                {
+                    b.Navigation("Documents");
                 });
 #pragma warning restore 612, 618
         }

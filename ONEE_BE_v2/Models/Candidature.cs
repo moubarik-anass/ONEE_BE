@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace ONEE_BE_v2.Models
 {
@@ -21,5 +23,9 @@ namespace ONEE_BE_v2.Models
         public string? statusfamiliale { get; set; }
         public string? description { get; set; }
         public required string Status { get; set; }
+
+        // Navigation property for the related Documents
+        public List<Document> Documents { get; set; } = new List<Document>();
     }
+
 }

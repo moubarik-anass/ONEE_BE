@@ -66,7 +66,12 @@
                                 title: "Actions",
                                 formatter: function (cell, formatterParams) {
                                     var id = cell.getRow().getData().id;
-                                    return "<a href='/candidatures/Details/" + id + "' class='btn btn-primary btn-sm'><i class='fa fa-eye'></i> Details</a>";
+                                    var detailsBtn = "<a href='/candidatures/Details/" + id + "' class='btn btn-primary btn-sm'><i class='fa fa-eye'></i> Details</a>";
+                                    var cinBtn = "<a href='/candidatures/DocumentCin?candidatureId=" + id + "' class='btn btn-info btn-sm'><i class='fa fa-file'></i> CIN</a>";
+                                    var diplomeBtn = "<a href='/candidatures/DocumentDiplome?candidatureId=" + id + "' class='btn btn-success btn-sm'><i class='fa fa-file'></i> Diplome</a>";
+                                    var cvBtn = "<a href='/candidatures/DocumentCv?candidatureId=" + id + "' class='btn btn-warning btn-sm'><i class='fa fa-file'></i> CV</a>";
+
+                                    return "<div class='action-buttons'>" + detailsBtn + cinBtn + diplomeBtn + cvBtn + "</div>";
                                 }
                             }
                         ]

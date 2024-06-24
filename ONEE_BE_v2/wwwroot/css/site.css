@@ -70,3 +70,12 @@ body {
     .nav-link:hover {
         background-color: #f1f1f1;
     }
+
+
+.action-buttons a {
+    display: block;
+    margin-bottom: 5px; /* Espacement entre les boutons */
+    width: 100%; /* Assure que les boutons occupent toute la largeur */
+    text-align: center; /* Centre les boutons horizontalement */
+    line-height: 2; /* Augmente la hauteur des lignes */
+}

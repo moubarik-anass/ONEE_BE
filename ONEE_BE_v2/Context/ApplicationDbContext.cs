@@ -12,5 +12,8 @@ namespace ONEE_BE_v2.Context
         public DbSet<Offre> Offres { get; set; }
         public DbSet<Candidature> Candidatures { get; set; }
         public DbSet<Recruteur> Recruteurs { get; set; }
+        public DbSet<Document> Documents { get; set; }
+
+
     }
 }

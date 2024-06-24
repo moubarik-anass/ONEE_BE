@@ -20,11 +20,13 @@ namespace ONEE_BE_v2.Controllers
         {
             _context = context;
         }
+
         [Authorize]
         public IActionResult Index()
         {
             return View();
         }
+
         [Authorize]
         [HttpGet]
         public async Task<JsonResult> GetCandidatures()
@@ -132,7 +134,6 @@ namespace ONEE_BE_v2.Controllers
             return View(candidature);
         }
 
-
         [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
@@ -170,5 +171,51 @@ namespace ONEE_BE_v2.Controllers
         {
             return _context.Candidatures.Any(e => e.Id == id);
         }
+
+        [Authorize]
+        public async Task<IActionResult> DocumentCin(int candidatureId)
+        {
+            var document = await _context.Documents
+                .FirstOrDefaultAsync(d => d.CandidatureId == candidatureId && d.FileType == "cin");
+
+            if (document == null)
+            {
+                return NotFound();
+            }
+
+            // Exemple pour un PDF
+            return File(System.IO.File.OpenRead(document.Path), "application/pdf", document.FileName);
+        }
+
+        [Authorize]
+        public async Task<IActionResult> DocumentCv(int candidatureId)
+        {
+            var document = await _context.Documents
+                .FirstOrDefaultAsync(d => d.CandidatureId == candidatureId && d.FileType == "cv");
+
+            if (document == null)
+            {
+                return NotFound();
+            }
+
+            // Exemple pour un document texte
+            return File(System.IO.File.OpenRead(document.Path), "text/plain", document.FileName);
+        }
+
+        [Authorize]
+        public async Task<IActionResult> DocumentDiplome(int candidatureId)
+        {
+            var document = await _context.Documents
+                .FirstOrDefaultAsync(d => d.CandidatureId == candidatureId && d.FileType == "diplome");
+
+            if (document == null)
+            {
+                return NotFound();
+            }
+
+            // Exemple pour une image
+            return File(System.IO.File.OpenRead(document.Path), "image/jpeg", document.FileName);
+        }
+
     }
 }
