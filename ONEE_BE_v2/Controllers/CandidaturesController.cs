@@ -23,8 +23,17 @@ namespace ONEE_BE_v2.Controllers
 
         [Authorize]
         public IActionResult Index()
-        {
+        {                
+            var titres = _context.Offres
+                    .Where(o => o.Status == "active" )
+                    .Select(o => o.Titre)
+                    .ToList();
+
+                ViewBag.OffresTitres = titres;
             return View();
+
+
+
         }
 
         [Authorize]
@@ -216,6 +225,19 @@ namespace ONEE_BE_v2.Controllers
             // Exemple pour une image
             return File(System.IO.File.OpenRead(document.Path), "image/jpeg", document.FileName);
         }
+
+
+        //[Authorize]
+        //[HttpGet]
+        //public async Task<JsonResult> GetOffresTitles()
+        //{
+        //    var titres = await _context.Offres
+        //        .Where(o => o.Status == "active")
+        //        .Select(o => new { o.Id, o.Titre })
+        //        .ToListAsync();
+
+        //    return Json(titres);
+        //}
 
     }
 }

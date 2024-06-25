@@ -26,6 +26,9 @@ namespace ONEE_BE_v2.Models
 
         // Navigation property for the related Documents
         public List<Document> Documents { get; set; } = new List<Document>();
+        public int OffreId { get; set; }
+        // Navigation property for the related Offre
+        public Offre Offre { get; set; }
     }
 
 }

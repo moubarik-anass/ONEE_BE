@@ -26,6 +26,8 @@ namespace ONEE_BE_v2.Models
 		public string Description { get; set; }
 
         public string Status { get; set; }
+        public List<Candidature> Candidatures { get; set; } = new List<Candidature>();
+
 
     }
 }

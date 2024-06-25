@@ -7,6 +7,25 @@
 <button id="downloadExcelBtn" class="btn btn-primary">Télécharger en Excel</button>
 <input type="date" id="startDatePicker">
 <input type="date" id="endDatePicker">
+<br />
+
+<select id="offreSelect">
+    <option value="">Sélectionnez une offre</option>
+</select>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const select = document.getElementById('offreSelect');
+        const offres = @Html.Raw(Json.Serialize(ViewBag.OffresTitres));
+
+        offres.forEach(titre => {
+            const option = document.createElement('option');
+            option.value = titre;
+            option.textContent = titre;
+            select.appendChild(option);
+        });
+    });
+</script>
 
     <script>
         $(document).ready(function () {
@@ -16,6 +35,8 @@
         function InitTabulator() {
             GetCandidatures();
         }
+
+
 
     function GetCandidatures() {
         try {

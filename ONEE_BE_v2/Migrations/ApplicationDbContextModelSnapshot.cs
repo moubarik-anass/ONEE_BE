@@ -42,6 +42,9 @@ namespace ONEE_BE_v2.Migrations
                     b.Property<string>("Nom")
                         .HasColumnType("longtext");
 
+                    b.Property<int>("OffreId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Prenom")
                         .HasColumnType("longtext");
 
@@ -74,6 +77,8 @@ namespace ONEE_BE_v2.Migrations
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("OffreId");
 
                     b.ToTable("Candidatures");
                 });
@@ -175,6 +180,17 @@ namespace ONEE_BE_v2.Migrations
                     b.ToTable("Recruteurs");
                 });
 
+            modelBuilder.Entity("ONEE_BE_v2.Models.Candidature", b =>
+                {
+                    b.HasOne("ONEE_BE_v2.Models.Offre", "Offre")
+                        .WithMany("Candidatures")
+                        .HasForeignKey("OffreId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Offre");
+                });
+
             modelBuilder.Entity("ONEE_BE_v2.Models.Document", b =>
                 {
                     b.HasOne("ONEE_BE_v2.Models.Candidature", "Candidature")
@@ -189,6 +205,11 @@ namespace ONEE_BE_v2.Migrations
             modelBuilder.Entity("ONEE_BE_v2.Models.Candidature", b =>
                 {
                     b.Navigation("Documents");
+                });
+
+            modelBuilder.Entity("ONEE_BE_v2.Models.Offre", b =>
+                {
+                    b.Navigation("Candidatures");
                 });
 #pragma warning restore 612, 618
         }
