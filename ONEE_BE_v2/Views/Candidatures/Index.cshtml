@@ -16,12 +16,11 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const select = document.getElementById('offreSelect');
-        const offres = @Html.Raw(Json.Serialize(ViewBag.OffresTitres));
-
-        offres.forEach(titre => {
+        const offres = @Html.Raw(Json.Serialize(ViewBag.Offres));
+        offres.forEach(offre => {
             const option = document.createElement('option');
-            option.value = titre;
-            option.textContent = titre;
+            option.value = offre.id;
+            option.textContent = offre.titre;
             select.appendChild(option);
         });
     });
@@ -36,10 +35,15 @@
             GetCandidatures();
         }
 
-
+    $(document).ready(function () {
+        $('#offreSelect').on('change', function () {
+            GetCandidatures();
+        });
+    });
 
     function GetCandidatures() {
         try {
+            var selectedOffreId = $('#offreSelect').val();
             $.ajax({
                 url: '/candidatures/GetCandidatures',
                 type: 'GET',
@@ -47,7 +51,10 @@
                 contentType: 'application/json',
                 success: function (response) {
                     var tabulatorData = response.filter(function (item) {
-                        return item.status === "validé" || item.status === "valide";
+                        //console.log("Statut de la candidature:", item.offreId);
+                        var statusCondition = item.status === "validé" || item.status === "valide";
+                        var offreCondition = !selectedOffreId || item.offreId == selectedOffreId;
+                        return statusCondition && offreCondition;
                     });
                     var table = new Tabulator("#tabulatorContainer", {
                         data: tabulatorData,

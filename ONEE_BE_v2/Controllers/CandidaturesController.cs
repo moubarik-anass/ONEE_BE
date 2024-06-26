@@ -23,17 +23,14 @@ namespace ONEE_BE_v2.Controllers
 
         [Authorize]
         public IActionResult Index()
-        {                
-            var titres = _context.Offres
-                    .Where(o => o.Status == "active" )
-                    .Select(o => o.Titre)
+        {
+            var offres = _context.Offres
+                    .Where(o => o.Status == "active")
+                    .Select(o => new { o.Id, o.Titre })
                     .ToList();
 
-                ViewBag.OffresTitres = titres;
+            ViewBag.Offres = offres;
             return View();
-
-
-
         }
 
         [Authorize]
