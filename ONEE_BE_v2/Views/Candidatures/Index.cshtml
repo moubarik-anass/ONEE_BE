@@ -9,7 +9,7 @@
 <input type="date" id="endDatePicker">
 <br />
 
-<select id="offreSelect">
+<br /><select id="offreSelect">
     <option value="">Sélectionnez une offre</option>
 </select>
 
@@ -140,6 +140,8 @@
                 data: data,
                 success: function (response) {
                     let tabulatorData = response;
+                    var selectedOffreId = $('#offreSelect').val();
+
                     if (startDate && !endDate) {
                         tabulatorData = response.filter(function (item) {
                             let itemDate = new Date(item.datepostulation);
@@ -147,14 +149,17 @@
                             return itemDate.getFullYear() === startDateObj.getFullYear() &&
                                 itemDate.getMonth() === startDateObj.getMonth() &&
                                 itemDate.getDate() === startDateObj.getDate() &&
-                                (item.status === "validé" || item.status === "valide");
+                                (item.status === "validé" || item.status === "valide") &&
+                                (!selectedOffreId || item.offreId == selectedOffreId);
                         });
                     } else if (startDate && endDate) {
                         tabulatorData = response.filter(function (item) {
                             let itemDate = new Date(item.datepostulation).getTime();
                             let startDateObj = new Date(startDate).getTime();
                             let endDateObj = new Date(endDate).getTime() + 86400000;
-                            return (itemDate >= startDateObj && itemDate < endDateObj) && (item.status === "validé" || item.status === "valide");
+                            return (itemDate >= startDateObj && itemDate < endDateObj) &&
+                                (item.status === "validé" || item.status === "valide") &&
+                                (!selectedOffreId || item.offreId == selectedOffreId);
                         });
                     } else if (!startDate && endDate) {
                         tabulatorData = response.filter(function (item) {
@@ -163,11 +168,13 @@
                             return itemDate.getFullYear() === endDateObj.getFullYear() &&
                                 itemDate.getMonth() === endDateObj.getMonth() &&
                                 itemDate.getDate() === endDateObj.getDate() &&
-                                (item.status === "validé" || item.status === "valide");
+                                (item.status === "validé" || item.status === "valide") &&
+                                (!selectedOffreId || item.offreId == selectedOffreId);
                         });
                     } else {
                         tabulatorData = response.filter(function (item) {
-                            return (item.status === "validé" || item.status === "valide");
+                            return (item.status === "validé" || item.status === "valide") &&
+                                (!selectedOffreId || item.offreId == selectedOffreId);
                         });
                     }
 
