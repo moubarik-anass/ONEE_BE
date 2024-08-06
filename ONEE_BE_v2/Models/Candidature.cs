@@ -21,6 +21,9 @@ namespace ONEE_BE_v2.Models
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime datenaissance { get; set; }
         public string? statusfamiliale { get; set; }
+        public string? CINE { get; set; } 
+        public int? TELEphone { get; set; } 
+        public string? Spécialite { get; set; }
         public string? description { get; set; }
         public required string Status { get; set; }
 

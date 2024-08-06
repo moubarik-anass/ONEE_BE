@@ -3,17 +3,18 @@
     ViewData["Title"] = "Liste des offres";
 }
 <h3>@ViewData["Title"]</h3>
-<link rel="stylesheet" href="~/css//site.css" />
+@* <link rel="stylesheet" href="~/css//site.css" /> *@
 <link href="https://unpkg.com/tabulator-tables@5.4.3/dist/css/tabulator.min.css" rel="stylesheet">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="text/javascript" src="https://unpkg.com/tabulator-tables@5.4.3/dist/js/tabulator.min.js"></script>
 <div>
-    <button class="btn btn-primary mb-2" id="btnAdd">Ajouter une offre</button>
+    <button class="btn btn-danger mb-2" id="btnAdd">Ajouter une offre</button>
 </div>
 <input type="text" class="form-control" id="searchInput" placeholder="Rechercher des offres">
+
 <br>
 <br>
-<div id="tabulatorContainer"></div>
+<div id="tabulatorContainer" style="width: 100%;"></div>
 <div class="modal" id="OffreModal">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -42,6 +43,41 @@
                     <label asp-for="Description"></label>
                     <input type="text" asp-for="Description" class="form-control" id="description" />
                 </div>
+                <div class="mb-2">
+                    <label asp-for="Diplome"></label>
+                    <select asp-for="Diplome" class="form-control" id="diplome">
+                        <option value="Diplome1">Diplome 1</option>
+                        <option value="Diplome2">Diplome 2</option>
+                        <option value="Diplome3">Diplome 3</option>
+                        <!-- Add more options as needed -->
+                    </select>
+                </div>
+                <div class="mb-2">
+                    <label asp-for="Specialite"></label>
+                    <select asp-for="Specialite" class="form-control" id="specialite">
+                        <option value="Specialite1">Spécialité 1</option>
+                        <option value="Specialite2">Spécialité 2</option>
+                        <option value="Specialite3">Spécialité 3</option>
+                        <!-- Add more options as needed -->
+                    </select>
+                </div>
+                <div class="mb-2">
+                    <label asp-for="CentreConcours"></label>
+                    <select asp-for="CentreConcours" class="form-control" id="centreConcours">
+                        <option value="Centre1">Centre de concours 1</option>
+                        <option value="Centre2">Centre de concours 2</option>
+                        <option value="Centre3">Centre de concours 3</option>
+                        <!-- Add more options as needed -->
+                    </select>
+                </div>
+                <div class="mb-2">
+                    <label asp-for="Age"></label>
+                    <input type="number" asp-for="Age" class="form-control" id="age" />
+                </div>
+                <div class="mb-2">
+                    <label asp-for="Path"></label>
+                    <input type="file" asp-for="Path" class="form-control" id="path" />
+                </div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-primary" id="Save" type="button" onclick="Insert();">Enregistrer</button>
@@ -51,6 +87,7 @@
         </div>
     </div>
 </div>
+
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/js/Offre.js"></script>
 <script src="~/js/site.js"></script>

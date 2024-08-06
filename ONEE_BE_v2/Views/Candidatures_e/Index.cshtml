@@ -1,73 +1,345 @@
 ﻿@model IEnumerable<ONEE_BE_v2.Models.Candidature>
-
 @{
     ViewData["Title"] = "Candidatures";
 }
 
-<h1>Index</h1>
-<link rel="stylesheet" href="~/css//site.css" />
-<!--<p>
-    <a asp-action="Create">Create New</a>
-</p>-->
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Id)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Nom)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Prenom)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Email)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.datepostulation)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Emploiprecedent)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.statusfamiliale)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.Where(c => c.Status.Equals("En cours", StringComparison.OrdinalIgnoreCase)))
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Id)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Nom)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Prenom)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Email)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.datepostulation)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Emploiprecedent)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.statusfamiliale)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary"><i class="fa fa-pencil"></i>Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary"><i class="fa fa-eye"></i>Details</a>
-                    <!--<a asp-action="Delete" asp-route-id="@item.Id">Delete</a>-->
-                </td>
-            </tr>
-        }
+<h1>Candidatures</h1>
+<button id="downloadExcelBtn" class="btn btn-primary">Télécharger en Excel</button>
+<input type="date" id="startDatePicker">
+<input type="date" id="endDatePicker">
+<br />
+<br />
+<select id="offreSelect">
+    <option value="">Sélectionnez une offre</option>
+</select>
 
-    </tbody>
-</table>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const select = document.getElementById('offreSelect');
+        const offres = @Html.Raw(Json.Serialize(ViewBag.Offres));
+        offres.forEach(offra => {
+            const option = document.createElement('option');
+            option.value = offra.id;
+            option.textContent = offra.titre;
+            select.appendChild(option);
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        InitTabulator();
+    });
+
+    function InitTabulator() {
+        GetCandidatures();
+    }
+
+    $('#offreSelect').on('change', function () {
+        GetCandidatures();
+    });
+
+    function GetCandidatures() {
+        var selectedOffreId = $('#offreSelect').val();
+        $.ajax({
+            url: '/candidatures/GetCandidatures',
+            type: 'GET',
+            dataType: 'json',
+            contentType: 'application/json',
+            success: function (response) {
+                var tabulatorData = response.filter(function (item) {
+                    var statusCondition = item.status === "en cours" || item.status === "En cours";
+                    var offreCondition = !selectedOffreId || item.offreId == selectedOffreId;
+                    return statusCondition && offreCondition;
+                });
+                var table = new Tabulator("#tabulatorContainer", {
+                    data: tabulatorData,
+                    layout: "fitColumns",
+                    columns: [
+                        { title: "Id", field: "id", headerFilter: true },
+                        { title: "Nom", field: "nom", headerFilter: true },
+                        { title: "Prénom", field: "prenom", headerFilter: true },
+                        { title: "Email", field: "email", headerFilter: true },
+                        //{ title: "Mot de passe", field: "motdepasse", headerFilter: true },
+                        {
+                            title: "Date Postulation",
+                            field: "datepostulation",
+                            headerFilter: true,
+                            formatter: function (cell, formatterParams, onRendered) {
+                                var date = new Date(cell.getValue());
+                                var day = date.getDate();
+                                var month = date.getMonth() + 1;
+                                var year = date.getFullYear();
+
+                                if (day < 10) {
+                                    day = '0' + day;
+                                }
+                                if (month < 10) {
+                                    month = '0' + month;
+                                }
+
+                                return day + '-' + month + '-' + year;
+                            }
+                        },
+                        { title: "Ville", field: "ville", headerFilter: true },
+                        { title: "Adresse", field: "adresse", headerFilter: true },
+                        { title: "Emploi précédent", field: "emploiprecedent", headerFilter: true },
+                        {
+                            title: "Actions",
+                            formatter: function (cell, formatterParams) {
+                                var id = cell.getRow().getData().id;
+                                var editStatusBtn = `<a href="javascript:void(0)" onclick="openEditModal(${id})" class="btn btn-primary btn-sm"><i class="fa fa-edit"></i> Edit Status</a>`;
+                                var detailsBtn = "<a href='/candidatures_e/Details/" + id + "' class='btn btn-primary btn-sm'><i class='fa fa-eye'></i> Details</a>";
+                                var cinBtn = "<a href='/candidatures/DocumentCin?candidatureId=" + id + "' class='btn btn-info btn-sm'><i class='fa fa-file'></i> CIN</a>";
+                                var diplomeBtn = "<a href='/candidatures/DocumentDiplome?candidatureId=" + id + "' class='btn btn-success btn-sm'><i class='fa fa-file'></i> Diplome</a>";
+                                var cvBtn = "<a href='/candidatures/DocumentCv?candidatureId=" + id + "' class='btn btn-warning btn-sm'><i class='fa fa-file'></i> CV</a>";
+                                return "<div class='action-buttons'>" + editStatusBtn + " " + detailsBtn + " " + cinBtn + " " + diplomeBtn + " " + cvBtn + "</div>";
+                            }
+                        }
+                    ]
+                });
+            },
+            error: function (xhr, status, error) {
+                throw new Error('Impossible d\'afficher les offres : ' + error);
+            }
+        });
+    }
+
+    document.getElementById('downloadExcelBtn').addEventListener('click', function () {
+        let startDate = document.getElementById('startDatePicker').value;
+        let endDate = document.getElementById('endDatePicker').value;
+
+        let data = {
+            startDate: startDate,
+            endDate: endDate
+        };
+
+        let startDateArray = startDate.split("-");
+        let endDateArray = endDate ? endDate.split("-") : startDateArray;
+        data.startDate = startDateArray[0] + "-" + startDateArray[1] + "-" + startDateArray[2];
+        data.endDate = endDateArray[0] + "-" + endDateArray[1] + "-" + endDateArray[2];
+
+        $.ajax({
+            url: '/candidatures/GetCandidatures',
+            type: 'GET',
+            dataType: 'json',
+            contentType: 'application/json',
+            data: data,
+            success: function (response) {
+                let tabulatorData = response;
+                var selectedOffreId = $('#offreSelect').val();
+
+                if (startDate && !endDate) {
+                    tabulatorData = response.filter(function (item) {
+                        let itemDate = new Date(item.datepostulation);
+                        let startDateObj = new Date(startDate);
+                        return itemDate.getFullYear() === startDateObj.getFullYear() &&
+                            itemDate.getMonth() === startDateObj.getMonth() &&
+                            itemDate.getDate() === startDateObj.getDate() &&
+                            (item.status === "en cours" || item.status === "En cours") &&
+                            (!selectedOffreId || item.offreId == selectedOffreId);
+                    });
+                } else if (startDate && endDate) {
+                    tabulatorData = response.filter(function (item) {
+                        let itemDate = new Date(item.datepostulation).getTime();
+                        let startDateObj = new Date(startDate).getTime();
+                        let endDateObj = new Date(endDate).getTime() + 86400000;
+                        return (itemDate >= startDateObj && itemDate < endDateObj) &&
+                            (item.status === "en cours" || item.status === "En cours") &&
+                            (!selectedOffreId || item.offreId == selectedOffreId);
+                    });
+                } else if (!startDate && endDate) {
+                    tabulatorData = response.filter(function (item) {
+                        let itemDate = new Date(item.datepostulation);
+                        let endDateObj = new Date(endDate);
+                        return itemDate.getFullYear() === endDateObj.getFullYear() &&
+                            itemDate.getMonth() === endDateObj.getMonth() &&
+                            itemDate.getDate() === endDateObj.getDate() &&
+                            (item.status === "en cours" || item.status === "En cours") &&
+                            (!selectedOffreId || item.offreId == selectedOffreId);
+                    });
+                } else {
+                    tabulatorData = response.filter(function (item) {
+                        return (item.status === "en cours" || item.status === "En cours") &&
+                            (!selectedOffreId || item.offreId == selectedOffreId);
+                    });
+                }
+
+                let csvData = "Nom,Prénom,Email,Date Postulation,Ville,Adresse,Emploi précédent,Nom du Père,Nom de la Mère,Date de Naissance,Statut Familial,CINE,Telephone,Specialite,Description\n";
+                tabulatorData.forEach(function (item) {
+                    //console.log(item);
+                    csvData += item.nom + "," + item.prenom + "," + item.email + "," + formatDate(item.datepostulation) + "," + item.ville + "," + item.adresse + "," + item.emploiprecedent + "," + item.nompere + "," + item.nommere + "," + formatDate(item.datenaissance) + "," + item.statusfamiliale + "," + item.cine + "," + item.telEphone + "," + item.spécialite + "," + item.description + "\n";
+                });
+
+                const blob = new Blob([csvData], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+
+                let fileName;
+                if (startDate && endDate) {
+                    fileName = 'Candidatures_En_cours_' + startDate + '_to_' + endDate + '.csv';
+                } else {
+                    const today = new Date();
+                    fileName = 'Candidatures_En_cours_' + today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + '_' + today.getHours() + '-' + today.getMinutes() + '-' + today.getSeconds() + '.csv';
+                }
+                a.download = fileName;
+
+                document.body.appendChild(a);
+                a.click();
+
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            },
+            error: function (xhr, status, error) {
+                throw new Error('Impossible d\'afficher les offres : ' + error);
+            }
+        });
+    });
+
+    function formatDate(dateString) {
+        dateString = dateString.replace(/\//g, '-');
+        const dateComponents = dateString.split(/-|\//);
+        let day, month, year;
+        let formattedDay, formattedMonth;
+        if (dateComponents.length === 3) {
+            if (parseInt(dateComponents[0]) > 12) {
+                year = parseInt(dateComponents[0]);
+                month = parseInt(dateComponents[1]);
+                day = parseInt(dateComponents[2]);
+            } else {
+                day = parseInt(dateComponents[0]);
+                month = parseInt(dateComponents[1]);
+                year = parseInt(dateComponents[2]);
+            }
+            formattedDay = day < 10 ? '0' + day : day;
+            formattedMonth = month < 10 ? '0' + month : month;
+        }
+        if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
+            return formattedDay + '/' + formattedMonth + '/' + year;
+        } else {
+            return dateString;
+        }
+    }
+
+    function openEditModal(id) {
+        $('#editStatusModal').modal('show');
+        $('#candidatureId').val(id);
+
+        $.ajax({
+            url: '/Candidatures/Edit/' + id,
+            type: 'GET',
+            success: function (response) {
+                $('#Status').val(response.status);
+                if (response.status === 'non validé') {
+                    $('#descriptionField').show();
+                    $('#description').val(response.description);
+                } else {
+                    $('#descriptionField').hide();
+                }
+            },
+            error: function (xhr, status, error) {
+                alert('Erreur lors de la récupération des détails de la candidature : ' + error);
+            }
+        });
+    }
+
+    function toggleDescriptionField() {
+        var status = document.getElementById('Status').value;
+        var descriptionField = document.getElementById('descriptionField');
+        descriptionField.style.display = (status === 'non validé') ? 'block' : 'none';
+    }
+
+
+    function closeModal() {
+        $('#editStatusModal').modal('hide');
+    }
+    $(document).ready(function () {
+        // ... votre code existant ...
+
+        $('#saveChangesBtn').click(function () {
+            var id = $('#candidatureId').val();
+            var status = $('#Status').val();
+            var description = $('#description').val();
+
+            $.ajax({
+                url: '/Candidatures_e/UpdateStatus',
+                type: 'POST',
+                data: {
+                    id: id,
+                    status: status,
+                    description: description
+                },
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.message);
+                        $('#editStatusModal').modal('hide');
+                        // Rafraîchir la table Tabulator
+                        GetCandidatures();
+                    } else {
+                        alert('Erreur : ' + response.message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    alert('Une erreur est survenue : ' + error);
+                }
+            });
+        });
+    });
+</script>
+
+<div class="modal fade" id="editStatusModal" tabindex="-1" role="dialog" aria-labelledby="editStatusModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editStatusModalLabel">Edit Status</h5>
+                <button type="button" class="close" onclick="closeModal()" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editStatusForm" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="candidatureId" name="Id" />
+                    <div class="form-group">
+                        <label for="Status" class="control-label">Status</label>
+                        <select id="Status" name="Status" class="form-control" onchange="toggleDescriptionField()">
+                            <option value="">-- Sélectionner le statut --</option>
+                            <option value="validé">Validé</option>
+                            <option value="non validé">Non Validé</option>
+                            <option value="en cours">En cours de traitement</option>
+                        </select>
+                        <span class="text-danger field-validation-valid" data-valmsg-for="Status" data-valmsg-replace="true"></span>
+                    </div>
+                    <div id="descriptionField" style="display: none;">
+                        <div class="form-group">
+                            <label for="description" class="control-label">Description</label>
+                            <input id="description" name="description" class="form-control" />
+                            <span class="text-danger field-validation-valid" data-valmsg-for="description" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Close</button>
+                <button type="button" class="btn btn-primary" id="saveChangesBtn">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="~/css//site.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+<link href="https://unpkg.com/tabulator-tables@5.4.3/dist/css/tabulator.min.css" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="https://unpkg.com/tabulator-tables@5.4.3/dist/js/tabulator.min.js"></script>
+
+<div style="margin-top: 30px;"></div>
+<div id="tabulatorContainer"></div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tabulator/5.1.0/js/tabulator.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tabulator/5.1.0/js/modules/virtual-dom/vertical.js"></script>
+}

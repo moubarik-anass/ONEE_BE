@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ONEE_BE_v2.Context;
 using ONEE_BE_v2.Models;
 using Microsoft.AspNetCore.Authorization;
-
 
 namespace ONEE_BE_v2.Controllers
 {
@@ -25,10 +23,24 @@ namespace ONEE_BE_v2.Controllers
         [Authorize]
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Candidatures.ToListAsync());
+            var offres = await _context.Offres
+                                 .Where(o => o.Status == "active")
+                                 .Select(o => new { o.Id, o.Titre })
+                                 .ToListAsync();
+
+            ViewBag.Offres = offres;
+            return View();
         }
 
-        // GET: Candidatures/Details/5
+        [Authorize]
+        [HttpGet]
+        public async Task<JsonResult> GetCandidatures()
+        {
+            var candidatures = await _context.Candidatures.ToListAsync();
+            return Json(candidatures);
+        }
+
+        [Authorize]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -37,7 +49,7 @@ namespace ONEE_BE_v2.Controllers
             }
 
             var candidature = await _context.Candidatures
-                .FirstOrDefaultAsync(m => m.Id == id);
+                                            .FirstOrDefaultAsync(m => m.Id == id);
             if (candidature == null)
             {
                 return NotFound();
@@ -55,7 +67,7 @@ namespace ONEE_BE_v2.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Nom,Prenom,Email,motdepasse,datepostulation,ville,Adresse,Emploiprecedent,nompere,nommere,datenaissance,statusfamiliale,Status")] Candidature candidature)
+        public async Task<IActionResult> Create([Bind("Id,Nom,Prenom,Email,Motdepasse,DatePostulation,Ville,Adresse,EmploiPrecedent,NomPere,NomMere,DateNaissance,StatusFamiliale,Status")] Candidature candidature)
         {
             if (ModelState.IsValid)
             {
@@ -85,7 +97,7 @@ namespace ONEE_BE_v2.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Status,description")] Candidature candidature)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Status,Description")] Candidature candidature)
         {
             if (id != candidature.Id)
             {
@@ -96,24 +108,21 @@ namespace ONEE_BE_v2.Controllers
             {
                 try
                 {
-                    // Charger l'entité existante à partir de la base de données
                     var existingCandidature = await _context.Candidatures.FindAsync(id);
-
                     if (existingCandidature == null)
                     {
                         return NotFound();
                     }
 
-                    // Mettre à jour uniquement la propriété "Status"
                     existingCandidature.Status = candidature.Status;
                     existingCandidature.description = candidature.description;
-                    // Mettre à jour l'entité dans le contexte
+
                     _context.Update(existingCandidature);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!CandidatureExists(candidature.Id))
+                    if (!await CandidatureExistsAsync(candidature.Id))
                     {
                         return NotFound();
                     }
@@ -127,7 +136,6 @@ namespace ONEE_BE_v2.Controllers
             return View(candidature);
         }
 
-
         [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
@@ -137,7 +145,7 @@ namespace ONEE_BE_v2.Controllers
             }
 
             var candidature = await _context.Candidatures
-                .FirstOrDefaultAsync(m => m.Id == id);
+                                            .FirstOrDefaultAsync(m => m.Id == id);
             if (candidature == null)
             {
                 return NotFound();
@@ -155,15 +163,88 @@ namespace ONEE_BE_v2.Controllers
             if (candidature != null)
             {
                 _context.Candidatures.Remove(candidature);
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool CandidatureExists(int id)
+        [Authorize]
+        public async Task<IActionResult> DocumentCin(int candidatureId)
         {
-            return _context.Candidatures.Any(e => e.Id == id);
+            var document = await _context.Documents
+                                         .FirstOrDefaultAsync(d => d.CandidatureId == candidatureId && d.FileType == "cin");
+
+            if (document == null)
+            {
+                return NotFound();
+            }
+
+            return File(await System.IO.File.ReadAllBytesAsync(document.Path), "application/pdf", document.FileName);
+        }
+
+        [Authorize]
+        public async Task<IActionResult> DocumentCv(int candidatureId)
+        {
+            var document = await _context.Documents
+                                         .FirstOrDefaultAsync(d => d.CandidatureId == candidatureId && d.FileType == "cv");
+
+            if (document == null)
+            {
+                return NotFound();
+            }
+
+            return File(await System.IO.File.ReadAllBytesAsync(document.Path), "text/plain", document.FileName);
+        }
+
+        [Authorize]
+        public async Task<IActionResult> DocumentDiplome(int candidatureId)
+        {
+            var document = await _context.Documents
+                                         .FirstOrDefaultAsync(d => d.CandidatureId == candidatureId && d.FileType == "diplome");
+
+            if (document == null)
+            {
+                return NotFound();
+            }
+
+            return File(await System.IO.File.ReadAllBytesAsync(document.Path), "image/jpeg", document.FileName);
+        }
+
+        private async Task<bool> CandidatureExistsAsync(int id)
+        {
+            return await _context.Candidatures.AnyAsync(e => e.Id == id);
+        }
+        [HttpPost]
+        public IActionResult UpdateStatus(int id, string status, string description)
+        {
+            try
+            {
+                var candidature = _context.Candidatures.Find(id);
+                if (candidature == null)
+                {
+                    return NotFound();
+                }
+
+                candidature.Status = status;
+                if (status == "non validé")
+                {
+                    candidature.description = description;
+                }
+                else
+                {
+                    candidature.description = null;
+                }
+
+                _context.Update(candidature);
+                _context.SaveChanges();
+
+                return Json(new { success = true, message = "Statut mis à jour avec succès" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Erreur lors de la mise à jour du statut: " + ex.Message });
+            }
         }
     }
 }

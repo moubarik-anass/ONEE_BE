@@ -2,7 +2,6 @@ $(document).ready(function () {
     InitTabulator();
 });
 
-
 function InitTabulator() {
     GetOffres();
 }
@@ -16,32 +15,50 @@ function GetOffres() {
         success: function (response) {
             var tabulatorData = [];
             if (response && response.length > 0) {
-                // Filtrer les offres avec un statut "actif"
                 var offresActives = response.filter(function (item) {
                     return item.status === "active";
                 });
-
                 $.each(offresActives, function (index, item) {
-                    tabulatorData.push({
-                        id: item.id,
-                        titre: item.titre,
-                        dateDebut: formatDate0(item.dateDebut),
-                        dateFin: formatDate0(item.dateFin),
-                        nbr_places: item.nbr_places,
-                        description: item.description
-                    });
+                    if (new Date(item.dateFin) < new Date()) {
+                        ArchiveOffer(item.id);
+                    } else {
+                        tabulatorData.push({
+                            id: item.id,
+                            titre: item.titre,
+                            dateDebut: formatDate0(item.dateDebut),
+                            dateFin: formatDate0(item.dateFin),
+                            nbr_places: item.nbr_places,
+                            diplome: item.diplome,
+                            specialite: item.specialite,
+                            centreConcours: item.centreConcours,
+                            age: item.age,
+                            path: item.path,
+                            description: item.description
+                        });
+                    }
                 });
             }
-
             var table = new Tabulator("#tabulatorContainer", {
                 data: tabulatorData,
                 layout: "fitColumns",
                 columns: [
-                    { title: "Id", field: "id" },
+                    { title: "Id", field: "id", width: 300 },
                     { title: "Titre", field: "titre" },
                     { title: "Date Début", field: "dateDebut" },
                     { title: "Date Fin", field: "dateFin" },
-                    { title: "Nombre de places", field: "nbr_places" },
+                    { title: "Nombre de places", field: "nbr_places", width: 113 },
+                    { title: "Diplome", field: "diplome" },
+                    { title: "Specialite", field: "specialite" },
+                    { title: "Centre de Concours", field: "centreConcours" },
+                    { title: "Age", field: "age", width: 113 },
+                    {
+                        title: "Fichier Decision",
+                        field: "id",
+                        formatter: function (cell, formatterParams, onRendered) {
+                            var id = cell.getValue();
+                            return "<a href='/offres/DownloadFile?id=" + id + "' target='_blank'>Cliquer ici pour télécharger</a>";
+                        }
+                    },
                     { title: "Description", field: "description" },
                     {
                         title: "Actions",
@@ -53,22 +70,18 @@ function GetOffres() {
                     }
                 ]
             });
-
-            // Fonction de recherche dynamique
             $("#searchInput").on("input", function () {
                 var searchText = $(this).val().toLowerCase();
                 if (searchText.trim() === "") {
-                    table.setData(tabulatorData); // Afficher toutes les offres si la recherche est vide
+                    table.setData(tabulatorData);
                 } else {
                     var filteredData = tabulatorData.filter(function (item) {
                         return item.titre.toLowerCase().includes(searchText);
                     });
-                    table.setData(filteredData); // Afficher les offres filtrées selon le titre
+                    table.setData(filteredData);
                 }
             });
-
-            $("#tabulatorContainer").show(); // Afficher la table une fois que les données sont chargées
-
+            $("#tabulatorContainer").show();
         },
         error: function (xhr, status, error) {
             alert('Impossible d\'afficher les offres : ' + error);
@@ -81,74 +94,23 @@ function GetOffres() {
     });
 }
 
-/*function GetOffres1() {
+
+function ArchiveOffer(id) {
     $.ajax({
-        url: '/OffresArchivee/GetOffres1',
-        type: 'GET',
-        dataType: 'json',
-        contentType: 'application/json;charset=utf-8',
+        url: '/offres/Archive/?id=' + id,
+        type: 'POST',
         success: function (response) {
-            var tabulatorData = [];
-            if (response && response.length > 0) {
-                // Filtrer les offres avec un statut "actif"
-                var offresActives = response.filter(function (item) {
-                    return item.status === "archive" || item.status === "archivee"; // Assurez-vous que le champ status correspond à votre structure de données
-                });
-                $.each(offresActives, function (index, item) {
-                    tabulatorData.push({
-                        id: item.id,
-                        titre: item.titre,
-                        dateDebut: formatDate(item.dateDebut),
-                        dateFin: formatDate(item.dateFin),
-                        nbr_places: item.nbr_places,
-                        description: item.description
-                    });
-                });
+            if (!response) {
+                console.error('Impossible d\'archiver l\'offre avec ID ' + id);
             }
-            var table = new Tabulator("#tabulatorContainer", {
-                data: tabulatorData,
-                layout: "fitColumns",
-                columns: [
-                    { title: "Id", field: "id" },
-                    { title: "Titre", field: "titre" },
-                    { title: "Date Début", field: "dateDebut" },
-                    { title: "Date Fin", field: "dateFin" },
-                    { title: "Nombre de places", field: "nbr_places" },
-                    { title: "Description", field: "description" }
-                    /*{
-                        title: "Actions",
-                        formatter: function (cell, formatterParams) {
-                            var id = cell.getData().id;
-                            return "<button class='btn btn-primary btn-sm' onclick='Edit(" + id + ")'>Modifier</button> " +
-                                "<button class='btn btn-danger btn-sm' onclick='Delete(" + id + ")'>Supprimer</button>";
-                        }
-                    }
-                ]
-            });
-            $("#searchInput").on("input", function () {
-                var searchText = $(this).val().toLowerCase();
-                if (searchText.trim() === "") {
-                    table.setData(tabulatorData); // Afficher toutes les offres si la recherche est vide
-                } else {
-                    var filteredData = tabulatorData.filter(function (item) {
-                        return item.titre.toLowerCase().includes(searchText);
-                    });
-                    table.setData(filteredData); // Afficher les offres filtrées selon le titre
-                }
-            });
-            $("#tabulatorContainer").show(); // Afficher la table une fois que les données sont chargées
         },
-        error: function (xhr, status, error) {
-            alert('Impossible d\'afficher les offres : ' + error);
-            try {
-                // Actions spécifiques en cas d'erreur côté client
-            } catch (ex) {
-                console.error('Erreur côté client : ' + ex.message);
-            }
+        error: function () {
+            console.error('Erreur lors de l\'archivage de l\'offre avec ID ' + id);
         }
     });
 }
-*/
+
+
 $('#btnAdd').on('click', function () {
     $('#OffreModal').modal('show');
     $('#modalTitle').text('Ajouter une offre');
@@ -158,37 +120,42 @@ $('#btnAdd').on('click', function () {
 });
 
 function Insert() {
-    var result = Validate();
-    if (!result) {
+    if (!Validate()) {
         return false;
     }
-
-    var formData = {
-        Titre: $('#titre').val(),
-        dateDebut: formatDate($('#dateDebut').val()),
-        dateFin: formatDate($('#dateFin').val()),
-        nbr_places: $('#nbr_places').val(),
-        Description: $('#description').val()
-    };
-
-    console.log(formData);
+    var formData = new FormData();
+    formData.append('Titre', $('#titre').val());
+    formData.append('dateDebut', formatDate($('#dateDebut').val()));
+    formData.append('dateFin', formatDate($('#dateFin').val()));
+    formData.append('nbr_places', $('#nbr_places').val());
+    formData.append('Diplome', $('#diplome').val());
+    formData.append('Specialite', $('#specialite').val());
+    formData.append('CentreConcours', $('#centreConcours').val());
+    formData.append('Age', $('#age').val());
+    formData.append('Description', $('#description').val());
+    var fileInput = $('#path')[0];
+    if (fileInput.files.length > 0) {
+        var file = fileInput.files[0];
+        formData.append('Path', file);
+    }
     $.ajax({
         url: '/offres/Insert',
         type: 'POST',
-        data: JSON.stringify(formData),
-        contentType: 'application/json',
+        data: formData,
+        processData: false,
+        contentType: false,
         success: function (response) {
-            if (!response) {
-                alert('Impossible d\'enregistrer les données');
-            } else {
+            if (response.success) {
                 HideModal();
                 GetOffres();
-                alert(response);
-                console.log(response);
+                alert(response.message);
+            } else {
+                alert('Erreur : ' + (response.error || 'Une erreur est survenue'));
             }
         },
-        error: function () {
-            alert('Impossible d\'enregistrer les données');
+        error: function (xhr, status, error) {
+            console.log(xhr.responseText);
+            alert('Impossible d\'enregistrer les données. Erreur : ' + error);
         }
     });
 }
@@ -215,13 +182,12 @@ function HideModal() {
 }
 
 function ClearData() {
-    $('#titre, #dateDebut, #dateFin, #nbr_places, #description').val('');
-    $('#titre, #dateDebut, #dateFin, #nbr_places, #description').css('border-color', 'lightgrey');
+    $('#titre, #dateDebut, #dateFin, #nbr_places, #diplome, #specialite, #centreConcours, #age, #path, #description').val('').css('border-color', 'lightgrey');
 }
 
 function Validate() {
     var isValid = true;
-    $('#titre, #dateDebut, #dateFin, #nbr_places, #description').each(function () {
+    $('#titre, #dateDebut, #dateFin, #nbr_places, #diplome, #specialite, #centreConcours, #age, #path, #description').each(function () {
         if (!$(this).val().trim()) {
             $(this).css('border-color', 'Red');
             isValid = false;
@@ -232,7 +198,7 @@ function Validate() {
     return isValid;
 }
 
-$('#titre, #dateDebut, #dateFin, #nbr_places, #description').on('change', function () {
+$('#titre, #dateDebut, #dateFin, #nbr_places, #diplome, #specialite, #centreConcours, #age, #path, #description').on('change', function () {
     Validate();
 });
 
@@ -257,7 +223,12 @@ function Edit(id) {
                 $('#dateDebut').val(formatDate(response.dateDebut));
                 $('#dateFin').val(formatDate(response.dateFin));
                 $('#nbr_places').val(response.nbr_places);
-                $('#description').val(response.description);
+                $('#diplome').val(response.diplome);
+                $('#specialite').val(response.specialite);
+                $('#centreConcours').val(response.centreConcours);
+                $('#age').val(response.age);
+                $('#path').val(response.path);
+                $('#description').val(response.description);  
             }
         },
         error: function () {
@@ -267,8 +238,7 @@ function Edit(id) {
 }
 
 function Update() {
-    var result = Validate();
-    if (!result) {
+    if (!Validate()) {
         return false;
     }
 
@@ -278,6 +248,11 @@ function Update() {
         dateDebut: $('#dateDebut').val(),
         dateFin: $('#dateFin').val(),
         nbr_places: $('#nbr_places').val(),
+        Diplome: $('#diplome').val(),
+        Specialite: $('#specialite').val(),
+        CentreConcours: $('#centreConcours').val(),
+        Age: $('#age').val(),
+        Path: $('#path').val(),
         Description: $('#description').val()
     };
 
@@ -300,29 +275,11 @@ function Update() {
         }
     });
 }
+
 function HideEditModal() {
     $('#OffreModal').hide();
 }
 
-function Delete(id) {
-    if (confirm('Vous êtes d\'accord pour supprimer cette offre ?')) {
-        $.ajax({
-            url: '/offres/Delete/?id=' + id,
-            type: 'POST',
-            success: function (response) {
-                if (!response) {
-                    alert('Impossible de supprimer cette offre');
-                } else {
-                    GetOffres();
-                    HideEditModal();
-                }
-            },
-            error: function () {
-                alert('Impossible de supprimer cette offre');
-            }
-        });
-    }
-}
 function Archive(id) {
     if (confirm('Vous êtes d\'accord pour archiver cette offre ?')) {
         $.ajax({
@@ -342,4 +299,3 @@ function Archive(id) {
         });
     }
 }
-

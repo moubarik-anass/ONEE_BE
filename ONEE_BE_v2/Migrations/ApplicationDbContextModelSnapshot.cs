@@ -33,6 +33,9 @@ namespace ONEE_BE_v2.Migrations
                     b.Property<string>("Adresse")
                         .HasColumnType("longtext");
 
+                    b.Property<string>("CINE")
+                        .HasColumnType("longtext");
+
                     b.Property<string>("Email")
                         .HasColumnType("longtext");
 
@@ -48,9 +51,15 @@ namespace ONEE_BE_v2.Migrations
                     b.Property<string>("Prenom")
                         .HasColumnType("longtext");
 
+                    b.Property<string>("Spécialite")
+                        .HasColumnType("longtext");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("longtext");
+
+                    b.Property<int?>("TELEphone")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("datenaissance")
                         .HasColumnType("datetime(6)");
@@ -121,8 +130,24 @@ namespace ONEE_BE_v2.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("Age")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CentreConcours")
+                        .HasColumnType("longtext");
+
                     b.Property<string>("Description")
                         .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Diplome")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Path")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Specialite")
                         .HasColumnType("longtext");
 
                     b.Property<string>("Status")

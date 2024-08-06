@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using ONEE_BE_v2.Context;
 using ONEE_BE_v2.Models;
 using Microsoft.AspNetCore.Authorization;
+using System.IO;
 
 namespace ONEE_BE_v2.Controllers
 {
@@ -33,47 +34,40 @@ namespace ONEE_BE_v2.Controllers
             }
             catch (Exception ex)
             {
-                // Gérer l'exception ici, par exemple, en journalisant l'erreur
-                // Vous pouvez également retourner un message d'erreur approprié ou une réponse JSON avec un code d'erreur
-                // Pour l'exemple, je vais simplement retourner une réponse JSON avec le message de l'exception
                 return Json(new { error = ex.Message });
             }
         }
 
         [Authorize]
         [HttpPost]
-        public JsonResult Insert([FromBody] Offre offres)
+        public JsonResult Insert([FromForm] Offre offre, IFormFile Path)
         {
-            //if (ModelState.IsValid)
-            //{
-                try
+            try
+            {
+                if (Path != null && Path.Length > 0)
                 {
-                    using (var dbContext = _context)
+                    var uploadsFolder = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+                    if (!Directory.Exists(uploadsFolder))
                     {
-                        offres.Status = "active";
-                        dbContext.Offres.Add(offres);
-                        dbContext.SaveChanges();
-                        return Json("Les détails de l'offre sont enregistrés");
+                        Directory.CreateDirectory(uploadsFolder);
                     }
+                    var uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.FileName;
+                    var filePath = System.IO.Path.Combine(uploadsFolder, uniqueFileName);
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        Path.CopyTo(fileStream);
+                    }
+                    offre.Path = "/uploads/" + uniqueFileName; // Chemin relatif pour l'accès web
                 }
-                catch (Exception ex)
-                {
-                    return Json(new { error = ex.Message });
-                }
-            //}
-            //else
-            //{
-            //    // Log the ModelState errors
-            //    var errors = ModelState
-            //        .Where(ms => ms.Value.Errors.Count > 0)
-            //        .Select(ms => new
-            //        {
-            //            Field = ms.Key,
-            //            Errors = ms.Value.Errors.Select(e => e.ErrorMessage).ToList()
-            //        });
-
-            //    return Json(new { message = "Problème de validation --Insert", errors = errors });
-            //}
+                offre.Status = "active";
+                _context.Offres.Add(offre);
+                _context.SaveChanges();
+                return Json(new { success = true, message = "Les détails de l'offre sont enregistrés" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, error = ex.Message });
+            }
         }
 
         [Authorize]
@@ -92,39 +86,23 @@ namespace ONEE_BE_v2.Controllers
         [HttpPost]
         public JsonResult Update([FromBody] Offre offres)
         {
-            //if (ModelState.IsValid)
-            //{
-                var existingOffre = _context.Offres.Find(offres.Id);
-                if (existingOffre != null)
-                {
-                    existingOffre.Titre = offres.Titre;
-                    existingOffre.dateDebut = offres.dateDebut;
-                    existingOffre.dateFin = offres.dateFin;
-                    existingOffre.nbr_places = offres.nbr_places;
-                    existingOffre.Description = offres.Description;
+            var existingOffre = _context.Offres.Find(offres.Id);
+            if (existingOffre != null)
+            {
+                existingOffre.Titre = offres.Titre;
+                existingOffre.dateDebut = offres.dateDebut;
+                existingOffre.dateFin = offres.dateFin;
+                existingOffre.nbr_places = offres.nbr_places;
+                existingOffre.Description = offres.Description;
 
-                    _context.Offres.Update(existingOffre);
-                    _context.SaveChanges();
-                    return Json("Les détails de l'offre sont modifiés");
-                }
-                else
-                {
-                    return Json("Aucune offre trouvée avec cet ID.");
-                }
-            //}
-            //else
-            //{
-            //    // Log the ModelState errors
-            //    var errors = ModelState
-            //        .Where(ms => ms.Value.Errors.Count > 0)
-            //        .Select(ms => new
-            //        {
-            //            Field = ms.Key,
-            //            Errors = ms.Value.Errors.Select(e => e.ErrorMessage).ToList()
-            //        });
-
-            //    return Json(new { message = "Problème de validation --Update", errors = errors });
-            //}
+                _context.Offres.Update(existingOffre);
+                _context.SaveChanges();
+                return Json("Les détails de l'offre sont modifiés");
+            }
+            else
+            {
+                return Json("Aucune offre trouvée avec cet ID.");
+            }
         }
 
         [Authorize]
@@ -156,23 +134,14 @@ namespace ONEE_BE_v2.Controllers
                     return Json(new { success = false, message = "Offre non trouvée" });
                 }
 
-                // Vérifier si la date de fin de l'offre est égale à aujourd'hui
                 var today = DateTime.Today;
                 if (offre.dateFin == today)
                 {
-                    // Mettre à jour le statut de l'offre à "archive"
-                    offre.Status = "archive";
-                }
-                else
-                {
-                    // Sinon, mettre à jour le statut de l'offre à "archivee"
                     offre.Status = "archivee";
                 }
-
-                // Enregistrer les modifications dans la base de données
                 await _context.SaveChangesAsync();
 
-                string message = offre.Status == "archive"
+                string message = offre.Status == "archivee"
                     ? "Offre archivée avec succès (date de fin aujourd'hui)"
                     : "Offre archivée avec succès";
 
@@ -180,14 +149,10 @@ namespace ONEE_BE_v2.Controllers
             }
             catch (Exception ex)
             {
-                // Gérer l'exception ici, par exemple, en journalisant l'erreur
-                // Vous pouvez également retourner un message d'erreur approprié ou une réponse JSON avec un code d'erreur
-                // Pour l'exemple, je vais simplement retourner une réponse JSON avec le message de l'exception
                 return Json(new { success = false, message = $"Erreur lors de l'archivage de l'offre : {ex.Message}" });
             }
         }
 
-        //Offres archivées
         [Authorize]
         public IActionResult Index0()
         {
@@ -200,16 +165,42 @@ namespace ONEE_BE_v2.Controllers
         {
             try
             {
-                var offres = await _context.Offres.ToListAsync();
+                var offres = await _context.Offres
+                    .Where(o => o.Status == "archivee")
+                    .ToListAsync();
                 return Json(offres);
             }
             catch (Exception ex)
             {
-                // Gérer l'exception ici, par exemple, en journalisant l'erreur
-                // Vous pouvez également retourner un message d'erreur approprié ou une réponse JSON avec un code d'erreur
-                // Pour l'exemple, je vais simplement retourner une réponse JSON avec le message de l'exception
                 return Json(new { error = ex.Message });
             }
         }
+
+        // Nouvelle action pour télécharger le fichier
+        [Authorize]
+        [HttpGet]
+        public IActionResult DownloadFile(int id)
+        {
+            var offre = _context.Offres.Find(id);
+            if (offre == null || string.IsNullOrEmpty(offre.Path))
+            {
+                return NotFound("Fichier non trouvé.");
+            }
+
+            // Construire le chemin complet du fichier
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", offre.Path.TrimStart('/'));
+
+            if (!System.IO.File.Exists(filePath))
+            {
+                return NotFound("Fichier non trouvé.");
+            }
+
+            var fileBytes = System.IO.File.ReadAllBytes(filePath);
+            var fileName = Path.GetFileName(filePath);
+            return File(fileBytes, "application/octet-stream", fileName);
+        }
+
+
+
     }
 }

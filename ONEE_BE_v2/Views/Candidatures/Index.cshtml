@@ -64,7 +64,7 @@
                             { title: "Nom", field: "nom", headerFilter: true },
                             { title: "Prénom", field: "prenom", headerFilter: true },
                             { title: "Email", field: "email", headerFilter: true },
-                            { title: "Mot de passe", field: "motdepasse", headerFilter: true },
+                            //{ title: "Mot de passe", field: "motdepasse", headerFilter: true },
                             {
                                 title: "Date Postulation",
                                 field: "datepostulation",
@@ -178,9 +178,10 @@
                         });
                     }
 
-                    let csvData = "Nom,Prénom,Email,Date Postulation,Ville,Adresse,Emploi précédent,Nom du Père,Nom de la Mère,Date de Naissance,Statut Familial,Description\n";
+                    let csvData = "Nom,Prénom,Email,Date Postulation,Ville,Adresse,Emploi précédent,Nom du Père,Nom de la Mère,Date de Naissance,Statut Familial,CINE,Telephone,Specialite,Description\n";
                     tabulatorData.forEach(function (item) {
-                        csvData += item.nom + "," + item.prenom + "," + item.email + "," + formatDate(item.datepostulation) + "," + item.ville + "," + item.adresse + "," + item.emploiprecedent + "," + item.nompere + "," + item.nommere + "," + formatDate(item.datenaissance) + "," + item.statusfamiliale + "," + item.description + "\n";
+                        //console.log(item);
+                        csvData += item.nom + "," + item.prenom + "," + item.email + "," + formatDate(item.datepostulation) + "," + item.ville + "," + item.adresse + "," + item.emploiprecedent + "," + item.nompere + "," + item.nommere + "," + formatDate(item.datenaissance) + "," + item.statusfamiliale + "," + item.cine + "," + item.telEphone + "," + item.spécialite + "," + item.description + "\n";
                     });
 
                     const blob = new Blob([csvData], { type: 'text/csv' });

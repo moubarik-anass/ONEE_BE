@@ -24,6 +24,12 @@ namespace ONEE_BE_v2.Models
 
 		[Required]
 		public string Description { get; set; }
+        public string? Diplome { get; set; }
+        public string? Specialite { get; set; }
+        public string? CentreConcours { get; set; }
+        [Range(0, int.MaxValue, ErrorMessage = "L'âge doit être un nombre positif.")]
+        public int Age { get; set; }
+        public string Path { get; set; }
 
         public string Status { get; set; }
         public List<Candidature> Candidatures { get; set; } = new List<Candidature>();
